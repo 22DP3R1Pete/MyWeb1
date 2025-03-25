@@ -25,6 +25,10 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'height' => ['nullable', 'numeric', 'between:50,250'],
+            'weight' => ['nullable', 'numeric', 'between:20,300'],
+            'birth_year' => ['nullable', 'integer', 'between:1900,' . date('Y')],
+            'fitness_goals' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }

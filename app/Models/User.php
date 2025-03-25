@@ -25,6 +25,7 @@ class User extends Authenticatable
         'weight',
         'fitness_goals',
         'admin',
+        'birth_year',
     ];
 
     /**
@@ -50,7 +51,20 @@ class User extends Authenticatable
             'height' => 'decimal:2',
             'weight' => 'decimal:2',
             'admin' => 'boolean',
+            'birth_year' => 'integer',
         ];
+    }
+
+    /**
+     * Get the user's age.
+     */
+    public function getAgeAttribute()
+    {
+        if (!$this->birth_year) {
+            return null;
+        }
+        
+        return date('Y') - $this->birth_year;
     }
 
     /**

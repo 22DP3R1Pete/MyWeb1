@@ -33,12 +33,20 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'height' => ['nullable', 'numeric', 'between:50,250'],
+            'weight' => ['nullable', 'numeric', 'between:20,300'],
+            'birth_year' => ['nullable', 'integer', 'between:1900,' . date('Y')],
+            'fitness_goals' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'height' => $request->height,
+            'weight' => $request->weight,
+            'birth_year' => $request->birth_year,
+            'fitness_goals' => $request->fitness_goals,
         ]);
 
         event(new Registered($user));
