@@ -12,21 +12,67 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class WorkoutPlanFactory extends Factory
 {
     /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = WorkoutPlan::class;
+
+    /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        $difficultyLevels = ['Beginner', 'Intermediate', 'Advanced'];
-        
         return [
-            'name' => $this->faker->unique()->words(rand(2, 4), true) . ' Plan',
+            'title' => $this->faker->sentence(3),
             'description' => $this->faker->paragraph(),
-            'difficulty_level' => $this->faker->randomElement($difficultyLevels),
-            'duration' => $this->faker->numberBetween(4, 12),
-            'image' => $this->faker->randomElement([$this->faker->imageUrl(), null]),
-            'created_by' => User::inRandomOrder()->first()->id ?? User::factory(),
+            'duration' => $this->faker->numberBetween(1, 12),
+            'difficulty' => $this->faker->randomElement(['beginner', 'intermediate', 'advanced']),
+            'user_id' => User::factory(),
         ];
+    }
+
+    /**
+     * Indicate that the workout plan is for a beginner.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function beginner()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'difficulty' => 'beginner',
+            ];
+        });
+    }
+
+    /**
+     * Indicate that the workout plan is for an intermediate user.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function intermediate()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'difficulty' => 'intermediate',
+            ];
+        });
+    }
+
+    /**
+     * Indicate that the workout plan is for an advanced user.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function advanced()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'difficulty' => 'advanced',
+            ];
+        });
     }
 }

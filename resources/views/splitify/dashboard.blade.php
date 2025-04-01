@@ -6,8 +6,11 @@
                 <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
                 <p class="text-gray-600">Welcome back, {{ Auth::user()->name }}! Here's your workout summary.</p>
             </div>
-            <div class="mt-4 md:mt-0">
-                <a href="#" class="splitify-btn splitify-btn-primary">Create New Workout</a>
+            <div class="mt-4 md:mt-0 flex space-x-3">
+                <a href="{{ route('workout-plans.index') }}" class="splitify-btn splitify-btn-secondary">Workout Plans</a>
+                <a href="{{ route('exercises.index') }}" class="splitify-btn splitify-btn-secondary">Exercise Library</a>
+                <a href="{{ route('progress.index') }}" class="splitify-btn splitify-btn-secondary">Progress Tracking</a>
+                <a href="{{ route('workout-plans.create') }}" class="splitify-btn splitify-btn-primary">Create New Workout</a>
             </div>
         </div>
         
@@ -247,7 +250,7 @@
                             </div>
                         </div>
                         <div class="mt-6">
-                            <a href="#" class="splitify-btn splitify-btn-primary w-full">Start Workout</a>
+                            <a href="{{ route('workout-plans.index') }}" class="splitify-btn splitify-btn-primary w-full">View Workout Plans</a>
                         </div>
                     </div>
                 </div>

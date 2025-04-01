@@ -1,0 +1,16 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "public/**",
+            "use": "@vercel/static"
+        }
+    ],
+    "routes": [
+        { "src": "/build/(.*)", "dest": "/public/build/$1" },
+        { "src": "/(.*)\\.(?:js|css|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|webp)$", "dest": "/public/$1.$2" },
+        { "src": "/(.*)", "dest": "/public/index.html" }
+    ],
+    "buildCommand": "npm run build",
+    "outputDirectory": "public"
+} 

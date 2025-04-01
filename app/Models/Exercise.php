@@ -10,12 +10,17 @@ class Exercise extends Model
 {
     use HasFactory, SoftDeletes;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'name',
-        'description',
         'muscle_group',
-        'equipment_needed',
-        'demo_url',
+        'equipment',
+        'instructions',
+        'media_url',
     ];
 
     /**
@@ -41,6 +46,18 @@ class Exercise extends Model
      */
     public function workoutLogs()
     {
-        return $this->hasMany(WorkoutLog::class);
+        return $this->belongsToMany(WorkoutLog::class, 'workout_log_exercise')
+            ->withPivot('sets', 'reps', 'weight', 'notes')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the workout plans that include this exercise.
+     */
+    public function workoutPlans()
+    {
+        return $this->belongsToMany(WorkoutPlan::class, 'split_exercise')
+            ->withPivot('sets', 'reps', 'rest', 'day', 'order')
+            ->withTimestamps();
     }
 }

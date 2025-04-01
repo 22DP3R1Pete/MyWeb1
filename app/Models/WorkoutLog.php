@@ -9,25 +9,30 @@ class WorkoutLog extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'user_id',
-        'exercise_id',
-        'split_exercise_id',
+        'workout_plan_id',
         'date',
-        'sets_completed',
-        'reps_completed',
-        'weight_used',
         'notes',
-    ];
-
-    protected $casts = [
-        'date' => 'date',
-        'sets_completed' => 'integer',
-        'weight_used' => 'decimal:2',
+        'completed_exercises',
     ];
 
     /**
-     * Get the user who logged the workout.
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'date' => 'date',
+    ];
+
+    /**
+     * Get the user that owns the workout log.
      */
     public function user()
     {
@@ -35,18 +40,20 @@ class WorkoutLog extends Model
     }
 
     /**
-     * Get the exercise that was logged.
+     * Get the workout plan associated with the log.
      */
-    public function exercise()
+    public function workoutPlan()
     {
-        return $this->belongsTo(Exercise::class);
+        return $this->belongsTo(WorkoutPlan::class);
     }
 
     /**
-     * Get the split exercise that was logged.
+     * The exercises that belong to the workout log with performance data.
      */
-    public function splitExercise()
+    public function exercises()
     {
-        return $this->belongsTo(SplitExercise::class);
+        return $this->belongsToMany(Exercise::class, 'workout_log_exercise')
+            ->withPivot('sets', 'reps', 'weight', 'notes')
+            ->withTimestamps();
     }
 }

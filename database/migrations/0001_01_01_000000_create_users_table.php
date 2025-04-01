@@ -19,6 +19,11 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            $table->decimal('height', 5, 2)->nullable();
+            $table->decimal('weight', 5, 2)->nullable();
+            $table->text('fitness_goals')->nullable();
+            $table->integer('birth_year')->nullable();
+            $table->boolean('admin')->default(false);
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

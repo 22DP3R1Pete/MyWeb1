@@ -217,21 +217,21 @@
                             <span>{{ __('Dashboard') }}</span>
                         </a>
                         
-                        <a href="#" class="sidebar-link">
+                        <a href="{{ route('workout-plans.index') }}" class="sidebar-link {{ request()->routeIs('workout-plans.*') ? 'active' : '' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                             </svg>
                             <span>{{ __('My Workouts') }}</span>
                         </a>
                         
-                        <a href="#" class="sidebar-link">
+                        <a href="{{ route('exercises.index') }}" class="sidebar-link {{ request()->routeIs('exercises.*') ? 'active' : '' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                             </svg>
-                            <span>{{ __('Browse Splits') }}</span>
+                            <span>{{ __('Exercise Library') }}</span>
                         </a>
                         
-                        <a href="#" class="sidebar-link">
+                        <a href="{{ route('progress.index') }}" class="sidebar-link {{ request()->routeIs('progress.*') ? 'active' : '' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
@@ -266,7 +266,7 @@
                     <div class="mt-3 p-4 bg-white rounded-lg shadow-sm">
                         <h4 class="font-medium text-sm">{{ __('Push Day') }}</h4>
                         <p class="text-xs text-gray-500 mb-3">{{ __('5 exercises') }}</p>
-                        <a href="#" class="splitify-btn splitify-btn-primary text-xs w-full">{{ __('Start Workout') }}</a>
+                        <a href="{{ route('workout-plans.index') }}" class="splitify-btn splitify-btn-primary text-xs w-full">{{ __('View Workout Plans') }}</a>
                     </div>
                 </div>
             </aside>
@@ -296,21 +296,21 @@
                                 <span>{{ __('Dashboard') }}</span>
                             </a>
                             
-                            <a href="#" class="sidebar-link">
+                            <a href="{{ route('workout-plans.index') }}" class="sidebar-link {{ request()->routeIs('workout-plans.*') ? 'active' : '' }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                                 </svg>
                                 <span>{{ __('My Workouts') }}</span>
                             </a>
                             
-                            <a href="#" class="sidebar-link">
+                            <a href="{{ route('exercises.index') }}" class="sidebar-link {{ request()->routeIs('exercises.*') ? 'active' : '' }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                 </svg>
-                                <span>{{ __('Browse Splits') }}</span>
+                                <span>{{ __('Exercise Library') }}</span>
                             </a>
                             
-                            <a href="#" class="sidebar-link">
+                            <a href="{{ route('progress.index') }}" class="sidebar-link {{ request()->routeIs('progress.*') ? 'active' : '' }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
