@@ -190,7 +190,7 @@
         
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
             gap: 2.5rem;
         }
         
@@ -585,7 +585,7 @@
                 <p class="text-base md:text-lg lg:text-xl mt-4">Everything you need to create and maintain your perfect workout routine</p>
             </div>
             
-            <div class="features-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mt-12">
+            <div class="features-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 md:gap-8 mt-12">
                 <div class="feature-card">
                     <div class="feature-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -699,7 +699,7 @@
                 </div>
                 
                 <div class="split-card">
-                    <img src="https://images.unsplash.com/photo-1584863265045-f9d10ddba637?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Full Body Split">
+                    <img src="{{ asset('images/full-body.jpg') }}" alt="Full Body Split">
                     <div class="split-card-content">
                         <h3>Full Body Split</h3>
                         <p>A 3-day full body workout targeting all major muscle groups in each session.</p>

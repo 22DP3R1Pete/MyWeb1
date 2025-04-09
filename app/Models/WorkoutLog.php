@@ -20,6 +20,7 @@ class WorkoutLog extends Model
         'date',
         'notes',
         'completed_exercises',
+        'completed',
     ];
 
     /**
@@ -29,6 +30,7 @@ class WorkoutLog extends Model
      */
     protected $casts = [
         'date' => 'date',
+        'completed' => 'boolean',
     ];
 
     /**

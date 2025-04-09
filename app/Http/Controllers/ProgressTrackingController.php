@@ -92,7 +92,8 @@ class ProgressTrackingController extends Controller
             'exercises.*' => 'exists:exercises,id',
             'sets.*' => 'required|integer|min:1',
             'reps.*' => 'required|integer|min:1',
-            'weight.*' => 'required|numeric|min:0'
+            'weight.*' => 'required|numeric|min:0',
+            'completed' => 'nullable|boolean'
         ]);
         
         // Make sure the workout plan belongs to the user
@@ -108,6 +109,7 @@ class ProgressTrackingController extends Controller
         $log->date = $validated['date'];
         $log->notes = $validated['notes'] ?? null;
         $log->completed_exercises = count($validated['exercises']);
+        $log->completed = $request->has('completed');
         $log->save();
         
         // Attach exercises with their performance data
@@ -187,7 +189,8 @@ class ProgressTrackingController extends Controller
             'exercises.*' => 'exists:exercises,id',
             'sets.*' => 'required|integer|min:1',
             'reps.*' => 'required|integer|min:1',
-            'weight.*' => 'required|numeric|min:0'
+            'weight.*' => 'required|numeric|min:0',
+            'completed' => 'nullable|boolean'
         ]);
         
         // Make sure the workout plan belongs to the user
@@ -201,6 +204,7 @@ class ProgressTrackingController extends Controller
         $workoutLog->date = $validated['date'];
         $workoutLog->notes = $validated['notes'] ?? null;
         $workoutLog->completed_exercises = count($validated['exercises']);
+        $workoutLog->completed = $request->has('completed');
         $workoutLog->save();
         
         // Sync exercises with their performance data

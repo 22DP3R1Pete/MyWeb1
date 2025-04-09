@@ -114,20 +114,24 @@
             
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 @php
-                    $exercisesByDay = $workoutPlan->exercises->groupBy('pivot.day');
                     $maxDays = 7;
+                    $dayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
                 @endphp
                 
                 @for($day = 1; $day <= $maxDays; $day++)
                     <div class="bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
                         <div class="bg-gray-100 px-4 py-2 border-b border-gray-200">
-                            <h3 class="font-medium text-gray-900">{{ __('Day') }} {{ $day }}</h3>
+                            <h3 class="font-medium text-gray-900">{{ $dayLabels[$day-1] }}</h3>
                         </div>
                         
                         <div class="p-4">
-                            @if($exercisesByDay->has($day) && $exercisesByDay[$day]->count() > 0)
+                            @php
+                                $splitForDay = $splits->where('day_of_week', $day)->first();
+                            @endphp
+                            
+                            @if($splitForDay && $splitForDay->exercises->count() > 0)
                                 <ul class="space-y-3">
-                                    @foreach($exercisesByDay[$day] as $exercise)
+                                    @foreach($splitForDay->exercises as $exercise)
                                         <li class="bg-white p-3 rounded-md shadow-sm border border-gray-100">
                                             <div class="flex justify-between">
                                                 <div>
@@ -136,20 +140,93 @@
                                                 </div>
                                                 <div class="text-xs text-gray-500 text-right">
                                                     <p>{{ $exercise->pivot->sets }} × {{ $exercise->pivot->reps }}</p>
-                                                    <p>{{ $exercise->pivot->rest }}s rest</p>
+                                                    <p>{{ $exercise->pivot->rest_period }}s rest</p>
                                                 </div>
                                             </div>
                                         </li>
                                     @endforeach
                                 </ul>
+                                <div class="mt-3 pt-3 border-t border-gray-200">
+                                    <p class="text-xs text-gray-500">
+                                        <span class="font-medium">Exercises:</span> {{ $splitForDay->exercises->count() }}
+                                    </p>
+                                    <p class="text-xs text-gray-500">
+                                        <span class="font-medium">Est. Duration:</span> 
+                                        {{ $splitForDay->exercises->sum(function($ex) { return $ex->pivot->sets * ($ex->pivot->rest_period/60 + 1); }) }} min
+                                    </p>
+                                </div>
                             @else
-                                <div class="py-4 text-center text-sm text-gray-500">
-                                    <p>{{ __('Rest Day') }}</p>
+                                <div class="py-8 px-4 text-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-gray-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+                                    </svg>
+                                    <p class="text-sm font-medium text-gray-500">{{ __('Rest Day') }}</p>
+                                    <p class="text-xs text-gray-400 mt-1">{{ __('Recovery is an important part of progress') }}</p>
                                 </div>
                             @endif
                         </div>
                     </div>
                 @endfor
+            </div>
+        </div>
+    </div>
+    
+    <!-- Plan Metadata -->
+    <div class="px-6 pb-6">
+        <div class="bg-gray-50 rounded-lg p-5 border border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">{{ __('Workout Information') }}</h2>
+            
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Created On') }}</p>
+                    <p class="text-gray-900">{{ $workoutPlan->created_at->format('M j, Y') }}</p>
+                </div>
+                
+                <div>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Last Updated') }}</p>
+                    <p class="text-gray-900">{{ $workoutPlan->updated_at->format('M j, Y') }}</p>
+                </div>
+                
+                <div>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Total Training Days') }}</p>
+                    <p class="text-gray-900">{{ $totalTrainingDays }} of 7 days</p>
+                </div>
+                
+                <div>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Total Exercises') }}</p>
+                    <p class="text-gray-900">{{ $totalExercises }}</p>
+                </div>
+                
+                <div>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Plan Duration') }}</p>
+                    <p class="text-gray-900">{{ $workoutPlan->duration }} {{ Str::plural('week', $workoutPlan->duration) }}</p>
+                </div>
+                
+                <div>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Weekly Frequency') }}</p>
+                    <p class="text-gray-900">{{ $totalTrainingDays }} {{ Str::plural('session', $totalTrainingDays) }}/week</p>
+                </div>
+                
+                <div>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Workout Intensity') }}</p>
+                    <p class="text-gray-900">
+                        @php
+                            $avgSets = $splits->flatMap->exercises->avg('pivot.sets') ?? 0;
+                            $avgReps = $splits->flatMap->exercises->avg('pivot.reps') ?? 0;
+                        @endphp
+                        Avg {{ number_format($avgSets, 1) }} sets × {{ number_format($avgReps, 1) }} reps
+                    </p>
+                </div>
+                
+                <div>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Rest Periods') }}</p>
+                    <p class="text-gray-900">
+                        @php
+                            $avgRest = $splits->flatMap->exercises->avg('pivot.rest_period') ?? 0;
+                        @endphp
+                        Avg {{ number_format($avgRest) }}s between sets
+                    </p>
+                </div>
             </div>
         </div>
     </div>

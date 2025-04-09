@@ -32,15 +32,6 @@
     <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
         <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
             <div class="flex-1">
-                <label for="difficulty" class="block text-xs font-medium text-gray-500 mb-1">{{ __('Difficulty') }}</label>
-                <select id="difficulty" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50 text-sm">
-                    <option value="all">{{ __('All Difficulties') }}</option>
-                    <option value="beginner">{{ __('Beginner') }}</option>
-                    <option value="intermediate">{{ __('Intermediate') }}</option>
-                    <option value="advanced">{{ __('Advanced') }}</option>
-                </select>
-            </div>
-            <div class="flex-1">
                 <label for="duration" class="block text-xs font-medium text-gray-500 mb-1">{{ __('Duration') }}</label>
                 <select id="duration" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50 text-sm">
                     <option value="all">{{ __('All Durations') }}</option>
@@ -71,19 +62,43 @@
                 <div class="p-5">
                     <div class="flex justify-between items-start">
                         <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ $plan->title }}</h3>
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $plan->difficulty === 'beginner' ? 'bg-green-100 text-green-800' : ($plan->difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
-                            {{ ucfirst($plan->difficulty) }}
-                        </span>
                     </div>
                     <p class="text-sm text-gray-500 line-clamp-2 mb-3">{{ $plan->description }}</p>
+                    
+                    <!-- Workout Schedule Summary -->
+                    <div class="bg-gray-50 rounded-md p-3 mb-3 border border-gray-100">
+                        <h4 class="text-xs font-medium text-gray-700 mb-1">{{ __('Weekly Schedule') }}</h4>
+                        <div class="flex space-x-1">
+                            @php
+                                $splits = $plan->splits;
+                                $activeDays = $splits->pluck('day_of_week')->toArray();
+                            @endphp
+                            
+                            @for($day = 1; $day <= 7; $day++)
+                                @if(in_array($day, $activeDays))
+                                    <div class="w-7 h-7 rounded-full bg-splitify-teal flex items-center justify-center text-white text-xs">
+                                        {{ substr(['M','T','W','T','F','S','S'][$day-1], 0, 1) }}
+                                    </div>
+                                @else
+                                    <div class="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs">
+                                        {{ substr(['M','T','W','T','F','S','S'][$day-1], 0, 1) }}
+                                    </div>
+                                @endif
+                            @endfor
+                        </div>
+                    </div>
+                    
                     <div class="flex items-center mb-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         <span class="text-xs text-gray-500">{{ $plan->duration }} {{ Str::plural('week', $plan->duration) }}</span>
                         <span class="mx-2 text-gray-300">•</span>
-                        <span class="text-xs text-gray-500">{{ $plan->exercises->count() }} {{ Str::plural('exercise', $plan->exercises->count()) }}</span>
+                        <span class="text-xs text-gray-500">{{ $plan->splits->count() }} {{ Str::plural('workout', $plan->splits->count()) }}/week</span>
+                        <span class="mx-2 text-gray-300">•</span>
+                        <span class="text-xs text-gray-500">Created {{ $plan->created_at->diffForHumans() }}</span>
                     </div>
+                    
                     <div class="flex justify-between">
                         <a href="{{ route('workout-plans.show', $plan) }}" class="text-sm font-medium text-splitify-teal hover:text-splitify-navy">
                             {{ __('View Details') }}
@@ -125,52 +140,13 @@
         {{ $workoutPlans->links() }}
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div x-data="{ open: false, planId: null }" x-show="open" x-cloak class="fixed inset-0 z-50 overflow-y-auto" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity" aria-hidden="true" x-show="open" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
-
-            <div x-show="open" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
-                        </div>
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">{{ __('Delete Workout Plan') }}</h3>
-                            <div class="mt-2">
-                                <p class="text-sm text-gray-500">{{ __('Are you sure you want to delete this workout plan? All of your data associated with this plan will be permanently removed. This action cannot be undone.') }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <form id="deleteForm" method="POST" x-bind:action="'/workout-plans/' + planId">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">{{ __('Delete') }}</button>
-                    </form>
-                    <button @click="open = false" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">{{ __('Cancel') }}</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <x-delete-workout-plan-modal />
 
     <script>
         function confirmDelete(planId) {
-            Alpine.store('deleteModal').planId = planId;
-            Alpine.store('deleteModal').open = true;
+            window.dispatchEvent(new CustomEvent('open-delete-modal', {
+                detail: { planId: planId }
+            }));
         }
-
-        document.addEventListener('alpine:init', () => {
-            Alpine.store('deleteModal', {
-                open: false,
-                planId: null
-            });
-        });
     </script>
 </x-splitify-layout> 

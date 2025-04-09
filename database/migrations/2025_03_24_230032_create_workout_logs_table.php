@@ -14,17 +14,13 @@ return new class extends Migration
         Schema::create('workout_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('exercise_id')->constrained('exercises');
-            $table->foreignId('split_exercise_id')->constrained('split_exercises');
+            $table->foreignId('workout_plan_id')->nullable()->constrained('workout_plans');
             $table->date('date');
-            $table->integer('sets_completed');
-            $table->string('reps_completed');
-            $table->decimal('weight_used', 8, 2)->nullable();
+            $table->boolean('completed')->default(false);
             $table->text('notes')->nullable();
             $table->timestamps();
             
             $table->index(['user_id', 'date']);
-            $table->index('exercise_id');
         });
     }
 

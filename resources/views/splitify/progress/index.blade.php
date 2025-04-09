@@ -127,8 +127,8 @@
                                 <div class="text-xs text-gray-500">{{ $log->date->diffForHumans() }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">{{ $log->workoutPlan->title }}</div>
-                                <div class="text-xs text-gray-500">{{ ucfirst($log->workoutPlan->difficulty) }}</div>
+                                <div class="text-sm text-gray-900">{{ $log->workoutPlan?->title ?? __('Deleted Plan') }}</div>
+                                <div class="text-xs text-gray-500">{{ ucfirst($log->workoutPlan?->difficulty ?? '-') }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">{{ $log->completed_exercises }} {{ Str::plural('exercise', $log->completed_exercises) }}</div>

@@ -11,12 +11,11 @@ class WorkoutPlan extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name',
+        'title',
         'description',
-        'difficulty_level',
         'duration',
         'image',
-        'created_by',
+        'user_id',
     ];
 
     protected $casts = [
@@ -55,5 +54,36 @@ class WorkoutPlan extends Model
     public function subscriptions()
     {
         return $this->hasMany(UserPlanSubscription::class, 'plan_id');
+    }
+
+    /**
+     * Get exercises for this workout plan (used for fetching exercises).
+     */
+    public function exercises()
+    {
+        // Using hasManyThrough to fetch exercises via workout_splits
+        return $this->hasManyThrough(
+            Exercise::class,
+            WorkoutSplit::class,
+            'plan_id', // Foreign key on workout_splits table
+            'id',      // Foreign key on exercises table (via split_exercises) 
+            'id',      // Local key on workout_plans table
+            'id'       // Local key on workout_splits table
+        );
+    }
+    
+    /**
+     * Temporary method to handle attaching/detaching exercises
+     * This is needed to maintain compatibility with the controller that 
+     * expects a belongsToMany relationship with attach/detach methods
+     */
+    public function exercisesRelation()
+    {
+        // For now, we'll create a temporary split for each workout plan
+        // This is not ideal but will maintain compatibility with the existing controller
+        return $this->belongsToMany(Exercise::class, 'split_exercise', 'split_id', 'exercise_id')
+            ->withPivot('sets', 'reps', 'rest_period as rest', 'order', 'notes')
+            ->withTimestamps()
+            ->using(SplitExercise::class);
     }
 }

@@ -9,6 +9,13 @@ class SplitExercise extends Model
 {
     use HasFactory;
 
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'split_exercise';
+
     protected $fillable = [
         'split_id',
         'exercise_id',

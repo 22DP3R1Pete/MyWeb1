@@ -13,15 +13,20 @@ return new class extends Migration
     {
         Schema::create('exercises', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained('users');
             $table->string('name');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->string('muscle_group');
             $table->string('equipment_needed')->nullable();
-            $table->string('demo_url')->nullable();
+            $table->string('difficulty_level');
+            $table->string('video_url')->nullable();
+            $table->string('image_url')->nullable();
+            $table->json('instructions')->nullable();
+            $table->boolean('is_custom')->default(false);
             $table->timestamps();
-            $table->softDeletes();
             
             $table->index('muscle_group');
+            $table->index('user_id');
         });
     }
 

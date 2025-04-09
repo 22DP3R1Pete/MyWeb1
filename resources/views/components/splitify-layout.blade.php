@@ -247,28 +247,6 @@
                         </a>
                     </div>
                 </div>
-                
-                <!-- Current Plan -->
-                <div class="mb-6">
-                    <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('Current Plan') }}</h3>
-                    <div class="mt-3 p-4 bg-white rounded-lg shadow-sm">
-                        <h4 class="font-medium text-sm mb-1">{{ __('PPL Split') }}</h4>
-                        <div class="splitify-progress mb-2">
-                            <div class="splitify-progress-bar" style="width: 60%;"></div>
-                        </div>
-                        <p class="text-xs text-gray-500">{{ __('Week 3 of 8') }}</p>
-                    </div>
-                </div>
-                
-                <!-- Today's Workout -->
-                <div>
-                    <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('Today') }}</h3>
-                    <div class="mt-3 p-4 bg-white rounded-lg shadow-sm">
-                        <h4 class="font-medium text-sm">{{ __('Push Day') }}</h4>
-                        <p class="text-xs text-gray-500 mb-3">{{ __('5 exercises') }}</p>
-                        <a href="{{ route('workout-plans.index') }}" class="splitify-btn splitify-btn-primary text-xs w-full">{{ __('View Workout Plans') }}</a>
-                    </div>
-                </div>
             </aside>
             
             <!-- Mobile sidebar overlay -->
@@ -324,18 +302,6 @@
                                 </svg>
                                 <span>{{ __('Settings') }}</span>
                             </a>
-                        </div>
-                    </div>
-                    
-                    <!-- Current Plan in Mobile -->
-                    <div class="mb-6">
-                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('Current Plan') }}</h3>
-                        <div class="mt-3 p-4 bg-white rounded-lg shadow-sm">
-                            <h4 class="font-medium text-sm mb-1">{{ __('PPL Split') }}</h4>
-                            <div class="splitify-progress mb-2">
-                                <div class="splitify-progress-bar" style="width: 60%;"></div>
-                            </div>
-                            <p class="text-xs text-gray-500">{{ __('Week 3 of 8') }}</p>
                         </div>
                     </div>
                 </div>

@@ -35,7 +35,7 @@ class WorkoutSplit extends Model
      */
     public function exercises()
     {
-        return $this->belongsToMany(Exercise::class, 'split_exercises', 'split_id', 'exercise_id')
+        return $this->belongsToMany(Exercise::class, 'split_exercise', 'split_id', 'exercise_id')
             ->withPivot('sets', 'reps', 'rest_period', 'order', 'notes')
             ->withTimestamps();
     }

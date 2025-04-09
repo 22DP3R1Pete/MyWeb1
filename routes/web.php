@@ -4,15 +4,16 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WorkoutPlanController;
 use App\Http\Controllers\ExerciseLibraryController;
 use App\Http\Controllers\ProgressTrackingController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('splitify.home');
 });
 
-Route::get('/dashboard', function () {
-    return view('splitify.dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

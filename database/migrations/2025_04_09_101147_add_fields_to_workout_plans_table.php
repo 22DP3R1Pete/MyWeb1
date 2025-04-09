@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('split_exercises', function (Blueprint $table) {
+        Schema::table('workout_plans', function (Blueprint $table) {
             //
         });
     }
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('split_exercises', function (Blueprint $table) {
+        Schema::table('workout_plans', function (Blueprint $table) {
             //
         });
     }

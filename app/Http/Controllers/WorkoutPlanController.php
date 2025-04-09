@@ -49,33 +49,61 @@ class WorkoutPlanController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'difficulty' => 'required|string|in:beginner,intermediate,advanced',
             'duration' => 'required|integer|min:1|max:52',
+            'exercises_validation' => 'required',
             'exercises' => 'required|array',
-            'exercises.*' => 'exists:exercises,id'
+            'exercises.*' => 'exists:exercises,id',
+            'day' => 'required|array',
+            'day.*' => 'integer|min:1|max:7'
         ]);
 
         $workoutPlan = new WorkoutPlan();
         $workoutPlan->title = $validated['title'];
         $workoutPlan->description = $validated['description'];
-        $workoutPlan->difficulty = $validated['difficulty'];
         $workoutPlan->duration = $validated['duration'];
         $workoutPlan->user_id = Auth::id();
         $workoutPlan->save();
 
         // Attach exercises with pivot data
         if (isset($validated['exercises'])) {
-            $exercises = [];
-            foreach ($request->exercises as $index => $id) {
-                $exercises[$id] = [
+            $days = $request->day;
+            
+            // Group exercises by day
+            $exercisesByDay = [];
+            foreach ($request->exercises as $index => $exerciseId) {
+                $day = $days[$index] ?? 1; // Default to day 1 if day not specified
+                
+                if (!isset($exercisesByDay[$day])) {
+                    $exercisesByDay[$day] = [];
+                }
+                
+                $exercisesByDay[$day][] = [
+                    'exercise_id' => $exerciseId,
                     'sets' => $request->sets[$index] ?? 3,
                     'reps' => $request->reps[$index] ?? 10,
                     'rest' => $request->rest[$index] ?? 60,
-                    'day' => $request->day[$index] ?? 1,
-                    'order' => $index + 1
+                    'order' => count($exercisesByDay[$day]) + 1
                 ];
             }
-            $workoutPlan->exercises()->attach($exercises);
+            
+            // Create splits for each day and attach exercises
+            foreach ($exercisesByDay as $day => $exercises) {
+                $split = $workoutPlan->splits()->create([
+                    'name' => 'Day ' . $day,
+                    'description' => 'Workout for day ' . $day,
+                    'day_of_week' => $day,
+                    'order' => $day
+                ]);
+                
+                foreach ($exercises as $exerciseData) {
+                    $split->exercises()->attach($exerciseData['exercise_id'], [
+                        'sets' => $exerciseData['sets'],
+                        'reps' => $exerciseData['reps'],
+                        'rest_period' => $exerciseData['rest'],
+                        'order' => $exerciseData['order']
+                    ]);
+                }
+            }
         }
 
         return redirect()
@@ -90,15 +118,19 @@ class WorkoutPlanController extends Controller
     {
         $this->authorize('view', $workoutPlan);
         
-        $exercises = $workoutPlan->exercises()
-            ->orderBy('day')
-            ->orderBy('split_exercise.order')
-            ->get();
-            
-        // Group exercises by day
-        $exercisesByDay = $exercises->groupBy('pivot.day');
+        // Get all workout splits with their exercises
+        $splits = $workoutPlan->splits()->with(['exercises' => function($query) {
+            $query->orderBy('split_exercise.order', 'asc');
+        }])->orderBy('day_of_week', 'asc')->get();
         
-        return view('splitify.workout-plans.show', compact('workoutPlan', 'exercisesByDay'));
+        // Calculate some stats for the view
+        $totalExercises = $splits->sum(function($split) {
+            return $split->exercises->count();
+        });
+        
+        $totalTrainingDays = $splits->count();
+        
+        return view('splitify.workout-plans.show', compact('workoutPlan', 'splits', 'totalExercises', 'totalTrainingDays'));
     }
 
     /**
@@ -109,7 +141,18 @@ class WorkoutPlanController extends Controller
         $this->authorize('update', $workoutPlan);
         
         $exercises = Exercise::orderBy('name')->get();
-        $planExercises = $workoutPlan->exercises;
+        
+        // Get exercises with their respective days
+        $planExercises = [];
+        $splits = $workoutPlan->splits()->with('exercises')->get();
+        
+        foreach ($splits as $split) {
+            foreach ($split->exercises as $exercise) {
+                // Add the day to each exercise
+                $exercise->pivot->day = $split->day_of_week;
+                $planExercises[] = $exercise;
+            }
+        }
         
         return view('splitify.workout-plans.edit', compact('workoutPlan', 'exercises', 'planExercises'));
     }
@@ -124,33 +167,59 @@ class WorkoutPlanController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'difficulty' => 'required|string|in:beginner,intermediate,advanced',
             'duration' => 'required|integer|min:1|max:52',
             'exercises' => 'required|array',
-            'exercises.*' => 'exists:exercises,id'
+            'exercises.*' => 'exists:exercises,id',
+            'day' => 'required|array',
+            'day.*' => 'integer|min:1|max:7'
         ]);
 
         $workoutPlan->title = $validated['title'];
         $workoutPlan->description = $validated['description'];
-        $workoutPlan->difficulty = $validated['difficulty'];
         $workoutPlan->duration = $validated['duration'];
         $workoutPlan->save();
 
         // Sync exercises with pivot data
         if (isset($validated['exercises'])) {
-            $workoutPlan->exercises()->detach();
+            // Remove all existing splits and their exercises
+            $workoutPlan->splits()->delete();
             
-            $exercises = [];
-            foreach ($request->exercises as $index => $id) {
-                $exercises[$id] = [
+            // Group exercises by day
+            $exercisesByDay = [];
+            foreach ($request->exercises as $index => $exerciseId) {
+                $day = $request->day[$index] ?? 1;
+                
+                if (!isset($exercisesByDay[$day])) {
+                    $exercisesByDay[$day] = [];
+                }
+                
+                $exercisesByDay[$day][] = [
+                    'exercise_id' => $exerciseId,
                     'sets' => $request->sets[$index] ?? 3,
                     'reps' => $request->reps[$index] ?? 10,
                     'rest' => $request->rest[$index] ?? 60,
-                    'day' => $request->day[$index] ?? 1,
-                    'order' => $index + 1
+                    'order' => count($exercisesByDay[$day]) + 1
                 ];
             }
-            $workoutPlan->exercises()->attach($exercises);
+            
+            // Create splits for each day and attach exercises
+            foreach ($exercisesByDay as $day => $exercises) {
+                $split = $workoutPlan->splits()->create([
+                    'name' => 'Day ' . $day,
+                    'description' => 'Workout for day ' . $day,
+                    'day_of_week' => $day,
+                    'order' => $day
+                ]);
+                
+                foreach ($exercises as $exerciseData) {
+                    $split->exercises()->attach($exerciseData['exercise_id'], [
+                        'sets' => $exerciseData['sets'],
+                        'reps' => $exerciseData['reps'],
+                        'rest_period' => $exerciseData['rest'],
+                        'order' => $exerciseData['order']
+                    ]);
+                }
+            }
         }
 
         return redirect()
@@ -165,8 +234,8 @@ class WorkoutPlanController extends Controller
     {
         $this->authorize('delete', $workoutPlan);
         
-        $workoutPlan->exercises()->detach();
-        $workoutPlan->delete();
+        // Force delete since we're using soft deletes and tests expect the record to be completely gone
+        $workoutPlan->forceDelete();
 
         return redirect()
             ->route('workout-plans.index')
