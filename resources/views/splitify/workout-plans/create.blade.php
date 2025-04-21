@@ -231,9 +231,9 @@
                         </div>
                         
                         <div>
-                            <label for="duration" class="block text-sm font-medium text-gray-700 mb-1">{{ __('Duration (weeks)') }} <span class="text-red-500">*</span></label>
-                            <input type="number" name="duration" id="duration" x-model="planDuration" min="1" max="52" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50" required>
-                            @error('duration')
+                            <label for="duration_weeks" class="block text-sm font-medium text-gray-700 mb-1">{{ __('Duration (weeks)') }} <span class="text-red-500">*</span></label>
+                            <input type="number" name="duration_weeks" id="duration_weeks" x-model="planDuration" min="1" max="52" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50" required>
+                            @error('duration_weeks')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                     </div>

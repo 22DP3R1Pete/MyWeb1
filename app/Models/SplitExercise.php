@@ -14,7 +14,7 @@ class SplitExercise extends Model
      *
      * @var string
      */
-    protected $table = 'split_exercise';
+    protected $table = 'split_exercises';
 
     protected $fillable = [
         'split_id',

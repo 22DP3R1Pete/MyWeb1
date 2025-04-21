@@ -33,10 +33,15 @@ class ExerciseFactory extends Factory
             'None', 'Dumbbells', 'Barbell', 'Kettlebell', 'Machine', 'Cable', 'Resistance Band', 'Other'
         ];
         
+        $difficultyLevels = [
+            'Beginner', 'Intermediate', 'Advanced'
+        ];
+        
         return [
             'name' => $this->faker->unique()->words(rand(2, 4), true),
             'muscle_group' => $this->faker->randomElement($muscleGroups),
-            'equipment' => $this->faker->randomElement($equipment),
+            'equipment_needed' => $this->faker->randomElement($equipment),
+            'difficulty_level' => $this->faker->randomElement($difficultyLevels),
             'instructions' => $this->faker->paragraph(),
             'user_id' => User::factory(),
         ];
@@ -67,7 +72,7 @@ class ExerciseFactory extends Factory
     {
         return $this->state(function (array $attributes) use ($equipment) {
             return [
-                'equipment' => $equipment,
+                'equipment_needed' => $equipment,
             ];
         });
     }
@@ -81,7 +86,7 @@ class ExerciseFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'equipment' => 'None',
+                'equipment_needed' => 'None',
             ];
         });
     }

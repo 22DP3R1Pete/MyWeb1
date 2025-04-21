@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Exercise;
+use App\Models\WorkoutPlan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -30,7 +31,7 @@ class ExerciseLibraryController extends Controller
         }
         
         if ($request->has('equipment') && $request->equipment != 'all') {
-            $query->where('equipment', $request->equipment);
+            $query->where('equipment_needed', $request->equipment);
         }
         
         if ($request->has('search')) {
@@ -42,7 +43,7 @@ class ExerciseLibraryController extends Controller
         
         // Get unique muscle groups and equipment for filters
         $muscleGroups = Exercise::distinct()->pluck('muscle_group');
-        $equipment = Exercise::distinct()->pluck('equipment');
+        $equipment = Exercise::distinct()->pluck('equipment_needed');
         
         return view('splitify.exercises.index', compact('exercises', 'muscleGroups', 'equipment'));
     }
@@ -69,7 +70,8 @@ class ExerciseLibraryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:exercises',
             'muscle_group' => 'required|string|max:100',
-            'equipment' => 'required|string|max:100',
+            'equipment_needed' => 'required|string|max:100',
+            'difficulty_level' => 'required|string|in:Beginner,Intermediate,Advanced',
             'instructions' => 'required|string',
             'media' => 'nullable|image|max:2048', // Max 2MB
         ]);
@@ -77,7 +79,8 @@ class ExerciseLibraryController extends Controller
         $exercise = new Exercise();
         $exercise->name = $validated['name'];
         $exercise->muscle_group = $validated['muscle_group'];
-        $exercise->equipment = $validated['equipment'];
+        $exercise->equipment_needed = $validated['equipment_needed'];
+        $exercise->difficulty_level = $validated['difficulty_level'];
         $exercise->instructions = $validated['instructions'];
         
         // Handle media upload if provided
@@ -103,8 +106,13 @@ class ExerciseLibraryController extends Controller
             ->where('id', '!=', $exercise->id)
             ->limit(4)
             ->get();
+        
+        // Find workout plans that include this exercise through workout splits
+        $workoutPlans = WorkoutPlan::whereHas('splits.exercises', function($query) use ($exercise) {
+            $query->where('exercises.id', $exercise->id);
+        })->get();
             
-        return view('splitify.exercises.show', compact('exercise', 'relatedExercises'));
+        return view('splitify.exercises.show', compact('exercise', 'relatedExercises', 'workoutPlans'));
     }
 
     /**
@@ -129,14 +137,16 @@ class ExerciseLibraryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:exercises,name,' . $exercise->id,
             'muscle_group' => 'required|string|max:100',
-            'equipment' => 'required|string|max:100',
+            'equipment_needed' => 'required|string|max:100',
+            'difficulty_level' => 'required|string|in:Beginner,Intermediate,Advanced',
             'instructions' => 'required|string',
             'media' => 'nullable|image|max:2048', // Max 2MB
         ]);
         
         $exercise->name = $validated['name'];
         $exercise->muscle_group = $validated['muscle_group'];
-        $exercise->equipment = $validated['equipment'];
+        $exercise->equipment_needed = $validated['equipment_needed'];
+        $exercise->difficulty_level = $validated['difficulty_level'];
         $exercise->instructions = $validated['instructions'];
         
         // Handle media upload if provided

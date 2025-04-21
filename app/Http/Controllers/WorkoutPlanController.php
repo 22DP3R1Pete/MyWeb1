@@ -49,19 +49,23 @@ class WorkoutPlanController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'duration' => 'required|integer|min:1|max:52',
+            'duration_weeks' => 'required|integer|min:1|max:52',
             'exercises_validation' => 'required',
             'exercises' => 'required|array',
             'exercises.*' => 'exists:exercises,id',
             'day' => 'required|array',
-            'day.*' => 'integer|min:1|max:7'
+            'day.*' => 'integer|min:1|max:7',
+            'difficulty_level' => 'nullable|string|in:beginner,intermediate,advanced',
+            'sessions_per_week' => 'nullable|integer|min:1|max:7'
         ]);
 
         $workoutPlan = new WorkoutPlan();
         $workoutPlan->title = $validated['title'];
         $workoutPlan->description = $validated['description'];
-        $workoutPlan->duration = $validated['duration'];
+        $workoutPlan->duration_weeks = $validated['duration_weeks'];
         $workoutPlan->user_id = Auth::id();
+        $workoutPlan->difficulty_level = $validated['difficulty_level'] ?? 'intermediate';
+        $workoutPlan->sessions_per_week = $validated['sessions_per_week'] ?? 3;
         $workoutPlan->save();
 
         // Attach exercises with pivot data
@@ -120,7 +124,7 @@ class WorkoutPlanController extends Controller
         
         // Get all workout splits with their exercises
         $splits = $workoutPlan->splits()->with(['exercises' => function($query) {
-            $query->orderBy('split_exercise.order', 'asc');
+            $query->orderBy('split_exercises.order', 'asc');
         }])->orderBy('day_of_week', 'asc')->get();
         
         // Calculate some stats for the view
@@ -167,16 +171,20 @@ class WorkoutPlanController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'duration' => 'required|integer|min:1|max:52',
+            'duration_weeks' => 'required|integer|min:1|max:52',
             'exercises' => 'required|array',
             'exercises.*' => 'exists:exercises,id',
             'day' => 'required|array',
-            'day.*' => 'integer|min:1|max:7'
+            'day.*' => 'integer|min:1|max:7',
+            'difficulty_level' => 'nullable|string|in:beginner,intermediate,advanced',
+            'sessions_per_week' => 'nullable|integer|min:1|max:7'
         ]);
 
         $workoutPlan->title = $validated['title'];
         $workoutPlan->description = $validated['description'];
-        $workoutPlan->duration = $validated['duration'];
+        $workoutPlan->duration_weeks = $validated['duration_weeks'];
+        $workoutPlan->difficulty_level = $validated['difficulty_level'] ?? $workoutPlan->difficulty_level;
+        $workoutPlan->sessions_per_week = $validated['sessions_per_week'] ?? $workoutPlan->sessions_per_week;
         $workoutPlan->save();
 
         // Sync exercises with pivot data

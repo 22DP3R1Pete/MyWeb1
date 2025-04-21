@@ -131,7 +131,7 @@
                                 <div class="text-xs text-gray-500">{{ ucfirst($log->workoutPlan?->difficulty ?? '-') }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">{{ $log->completed_exercises }} {{ Str::plural('exercise', $log->completed_exercises) }}</div>
+                                <div class="text-sm text-gray-900">{{ $log->completed_exercises ?? count($log->exercises) }} {{ Str::plural('exercise', $log->completed_exercises ?? count($log->exercises)) }}</div>
                             </td>
                             <td class="px-6 py-4">
                                 <div class="text-sm text-gray-900 truncate max-w-xs">{{ Str::limit($log->notes, 50) ?: '-' }}</div>

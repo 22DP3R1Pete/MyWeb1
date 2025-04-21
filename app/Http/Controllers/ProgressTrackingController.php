@@ -54,7 +54,16 @@ class ProgressTrackingController extends Controller
         
         // Get stats
         $totalWorkouts = $query->count();
-        $totalExercises = $query->sum('completed_exercises');
+        
+        // Get total exercises completed - handle missing column gracefully
+        $totalExercises = 0;
+        try {
+            $totalExercises = $query->sum('completed_exercises') ?: 0;
+        } catch (\Exception $e) {
+            // If there's an error with the column, just use 0
+            $totalExercises = 0;
+        }
+        
         $streakData = $this->calculateStreak();
         
         return view('splitify.progress.index', compact(

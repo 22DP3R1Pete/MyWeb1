@@ -122,10 +122,10 @@
                 <div>
                     <h2 class="text-lg font-medium text-gray-900 mb-4">{{ __('Associated Workout Plans') }}</h2>
                     
-                    @if($exercise->workoutPlans->count() > 0)
+                    @if($workoutPlans->count() > 0)
                         <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
                             <ul class="divide-y divide-gray-200">
-                                @foreach($exercise->workoutPlans as $plan)
+                                @foreach($workoutPlans as $plan)
                                     <li class="p-4 hover:bg-gray-50">
                                         <div class="flex items-center justify-between">
                                             <div>
@@ -133,12 +133,12 @@
                                                     {{ $plan->title }}
                                                 </a>
                                                 <p class="text-sm text-gray-500">
-                                                    {{ __('Day') }} {{ $plan->pivot->day }} - {{ $plan->pivot->sets }} {{ __('sets') }} × {{ $plan->pivot->reps }} {{ __('reps') }}
+                                                    {{ $plan->sessions_per_week }} {{ __('sessions per week') }} · {{ $plan->duration_weeks }} {{ __('weeks') }}
                                                 </p>
                                             </div>
                                             <div>
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $plan->difficulty == 'beginner' ? 'bg-green-100 text-green-800' : ($plan->difficulty == 'intermediate' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800') }}">
-                                                    {{ ucfirst($plan->difficulty) }}
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $plan->difficulty_level == 'beginner' ? 'bg-green-100 text-green-800' : ($plan->difficulty_level == 'intermediate' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800') }}">
+                                                    {{ ucfirst($plan->difficulty_level) }}
                                                 </span>
                                             </div>
                                         </div>

@@ -17,8 +17,13 @@ class WorkoutPlanSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create exercises
-        $exercises = Exercise::factory(30)->create();
+        // Get existing exercises instead of creating new ones
+        $exercises = Exercise::all();
+        
+        if ($exercises->count() == 0) {
+            $this->command->info('No exercises found. Please run the exercise seeders first.');
+            return;
+        }
         
         // Create workout plans with splits and exercises
         WorkoutPlan::factory(5)->create()->each(function ($plan) use ($exercises) {
@@ -42,8 +47,8 @@ class WorkoutPlanSeeder extends Seeder
                         'split_id' => $split->id,
                         'exercise_id' => $exercise->id,
                         'sets' => rand(3, 5),
-                        'reps' => $this->getRandomReps(),
-                        'rest_period' => $this->getRandomRestPeriod(),
+                        'reps' => rand(8, 15),
+                        'rest_period' => rand(30, 180), // Rest period in seconds
                         'order' => $index + 1,
                         'notes' => rand(0, 1) ? "Focus on form for this exercise" : null,
                     ]);
@@ -57,10 +62,12 @@ class WorkoutPlanSeeder extends Seeder
                 $user->subscribedPlans()->attach($plan->id, [
                     'start_date' => now()->subDays(rand(0, 30)),
                     'status' => $this->getRandomStatus(),
-                    'current_week' => rand(1, $plan->duration),
+                    'current_week' => rand(1, $plan->duration_weeks),
                 ]);
             }
         });
+        
+        $this->command->info('Created workout plans with splits and exercises.');
     }
     
     private function getSplitName($day, $totalDays)
@@ -72,26 +79,6 @@ class WorkoutPlanSeeder extends Seeder
             $splits = ['Chest & Triceps', 'Back & Biceps', 'Shoulders & Arms', 'Legs', 'Full Body', 'Core & Cardio'];
             return $splits[($day - 1) % 6];
         }
-    }
-    
-    private function getRandomReps()
-    {
-        $repTypes = [
-            '8-12', '10-15', '12-15', '6-8', '15-20', 
-            '30 seconds', '45 seconds', '60 seconds'
-        ];
-        
-        return $repTypes[array_rand($repTypes)];
-    }
-    
-    private function getRandomRestPeriod()
-    {
-        $restPeriods = [
-            '30 seconds', '45 seconds', '60 seconds', 
-            '90 seconds', '2 minutes', '3 minutes'
-        ];
-        
-        return $restPeriods[array_rand($restPeriods)];
     }
     
     private function getRandomStatus()

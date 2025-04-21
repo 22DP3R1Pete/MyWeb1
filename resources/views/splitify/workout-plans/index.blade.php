@@ -92,7 +92,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        <span class="text-xs text-gray-500">{{ $plan->duration }} {{ Str::plural('week', $plan->duration) }}</span>
+                        <span class="text-xs text-gray-500">{{ $plan->duration_weeks }} {{ Str::plural('week', $plan->duration_weeks) }}</span>
                         <span class="mx-2 text-gray-300">•</span>
                         <span class="text-xs text-gray-500">{{ $plan->splits->count() }} {{ Str::plural('workout', $plan->splits->count()) }}/week</span>
                         <span class="mx-2 text-gray-300">•</span>

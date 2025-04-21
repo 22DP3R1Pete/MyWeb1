@@ -18,9 +18,10 @@ class Exercise extends Model
     protected $fillable = [
         'name',
         'muscle_group',
-        'equipment',
+        'equipment_needed',
         'instructions',
         'media_url',
+        'difficulty_level',
     ];
 
     /**
@@ -48,16 +49,6 @@ class Exercise extends Model
     {
         return $this->belongsToMany(WorkoutLog::class, 'workout_log_exercise')
             ->withPivot('sets', 'reps', 'weight', 'notes')
-            ->withTimestamps();
-    }
-
-    /**
-     * Get the workout plans that include this exercise.
-     */
-    public function workoutPlans()
-    {
-        return $this->belongsToMany(WorkoutPlan::class, 'split_exercise')
-            ->withPivot('sets', 'reps', 'rest', 'day', 'order')
             ->withTimestamps();
     }
 }

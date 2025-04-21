@@ -53,7 +53,7 @@
                         
                         <div>
                             <p class="text-sm font-medium text-gray-500">{{ __('Duration') }}</p>
-                            <p class="text-gray-900">{{ $workoutPlan->duration }} {{ __('weeks') }}</p>
+                            <p class="text-gray-900">{{ $workoutPlan->duration_weeks }} {{ __('weeks') }}</p>
                         </div>
                         
                         <div>
@@ -199,7 +199,7 @@
                 
                 <div>
                     <p class="text-sm font-medium text-gray-500">{{ __('Plan Duration') }}</p>
-                    <p class="text-gray-900">{{ $workoutPlan->duration }} {{ Str::plural('week', $workoutPlan->duration) }}</p>
+                    <p class="text-gray-900">{{ $workoutPlan->duration_weeks }} {{ Str::plural('week', $workoutPlan->duration_weeks) }}</p>
                 </div>
                 
                 <div>

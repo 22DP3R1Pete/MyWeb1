@@ -13,13 +13,32 @@ class WorkoutPlan extends Model
     protected $fillable = [
         'title',
         'description',
-        'duration',
+        'duration_weeks',
         'image',
         'user_id',
+        'difficulty_level',
+        'sessions_per_week',
+        'goals',
+        'is_public',
+        'is_template',
+        'metadata',
     ];
 
     protected $casts = [
-        'duration' => 'integer',
+        'duration_weeks' => 'integer',
+        'sessions_per_week' => 'integer',
+        'is_public' => 'boolean',
+        'is_template' => 'boolean',
+        'goals' => 'json',
+        'metadata' => 'json',
+    ];
+
+    // Add default values for attributes
+    protected $attributes = [
+        'difficulty_level' => 'intermediate',
+        'sessions_per_week' => 3,
+        'is_public' => false,
+        'is_template' => false,
     ];
 
     /**
@@ -81,7 +100,7 @@ class WorkoutPlan extends Model
     {
         // For now, we'll create a temporary split for each workout plan
         // This is not ideal but will maintain compatibility with the existing controller
-        return $this->belongsToMany(Exercise::class, 'split_exercise', 'split_id', 'exercise_id')
+        return $this->belongsToMany(Exercise::class, 'split_exercises', 'split_id', 'exercise_id')
             ->withPivot('sets', 'reps', 'rest_period as rest', 'order', 'notes')
             ->withTimestamps()
             ->using(SplitExercise::class);

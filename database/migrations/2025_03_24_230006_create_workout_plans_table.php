@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('workout_plans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->string('name');
+            $table->string('title');
             $table->text('description')->nullable();
             $table->string('difficulty_level');
             $table->integer('duration_weeks');
@@ -24,6 +24,7 @@ return new class extends Migration
             $table->boolean('is_template')->default(false);
             $table->json('metadata')->nullable();
             $table->timestamps();
+            $table->softDeletes();
             
             $table->index(['user_id', 'is_public']);
             $table->index('difficulty_level');

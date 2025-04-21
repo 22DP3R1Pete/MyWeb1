@@ -28,9 +28,12 @@ class WorkoutPlanFactory extends Factory
         return [
             'title' => $this->faker->sentence(3),
             'description' => $this->faker->paragraph(),
-            'duration' => $this->faker->numberBetween(1, 12),
-            'difficulty' => $this->faker->randomElement(['beginner', 'intermediate', 'advanced']),
+            'duration_weeks' => $this->faker->numberBetween(1, 12),
+            'difficulty_level' => $this->faker->randomElement(['beginner', 'intermediate', 'advanced']),
             'user_id' => User::factory(),
+            'sessions_per_week' => $this->faker->numberBetween(3, 6),
+            'is_public' => false,
+            'is_template' => false,
         ];
     }
 
@@ -43,7 +46,7 @@ class WorkoutPlanFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'difficulty' => 'beginner',
+                'difficulty_level' => 'beginner',
             ];
         });
     }
@@ -57,7 +60,7 @@ class WorkoutPlanFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'difficulty' => 'intermediate',
+                'difficulty_level' => 'intermediate',
             ];
         });
     }
@@ -71,7 +74,7 @@ class WorkoutPlanFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'difficulty' => 'advanced',
+                'difficulty_level' => 'advanced',
             ];
         });
     }

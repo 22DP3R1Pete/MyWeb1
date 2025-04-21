@@ -16,8 +16,6 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             UpdateAdminUserSeeder::class,
             ExerciseSeeder::class,
-            AdditionalExercisesSeeder::class,
-            MoreExercisesSeeder::class,
             WorkoutPlanSeeder::class,
         ]);
     }

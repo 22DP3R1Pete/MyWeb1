@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('workout_plan_id')->nullable()->constrained('workout_plans');
             $table->date('date');
             $table->boolean('completed')->default(false);
+            $table->integer('completed_exercises')->default(0);
             $table->text('notes')->nullable();
             $table->timestamps();
             

@@ -21,9 +21,10 @@ return new class extends Migration
             $table->string('difficulty_level');
             $table->string('video_url')->nullable();
             $table->string('image_url')->nullable();
-            $table->json('instructions')->nullable();
+            $table->text('instructions')->nullable();
             $table->boolean('is_custom')->default(false);
             $table->timestamps();
+            $table->softDeletes();
             
             $table->index('muscle_group');
             $table->index('user_id');
