@@ -2,7 +2,7 @@
     <div class="mb-6">
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900">Edit Workout Log</h1>
-            <a href="{{ route('progress.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 border border-transparent rounded-full text-sm font-semibold text-gray-700 hover:bg-gray-300 transition-all duration-300 ease-in-out">
+            <a href="{{ url('/progress') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 border border-transparent rounded-full text-sm font-semibold text-gray-700 hover:bg-gray-300 transition-all duration-300 ease-in-out">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
@@ -12,7 +12,7 @@
         <p class="mt-1 text-sm text-gray-500">Update your workout log details and performance.</p>
     </div>
 
-    <form action="{{ route('progress.update', $workoutLog) }}" method="POST" id="editWorkoutForm">
+    <form action="{{ url('/progress/' . $progress->id) }}" method="POST" id="editWorkoutForm">
         @csrf
         @method('PUT')
         
@@ -27,7 +27,7 @@
                         <select name="workout_plan_id" id="workout_plan_id" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50" required>
                             <option value="">-- Select a workout plan --</option>
                             @foreach($workoutPlans as $plan)
-                                <option value="{{ $plan->id }}" {{ (old('workout_plan_id', $workoutLog->workout_plan_id) == $plan->id) ? 'selected' : '' }}>{{ $plan->title }}</option>
+                                <option value="{{ $plan->id }}" {{ (old('workout_plan_id', $progress->workout_plan_id) == $plan->id) ? 'selected' : '' }}>{{ $plan->title }}</option>
                             @endforeach
                         </select>
                         @error('workout_plan_id')
@@ -37,7 +37,7 @@
                     
                     <div>
                         <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Date <span class="text-red-500">*</span></label>
-                        <input type="date" name="date" id="date" value="{{ old('date', $workoutLog->date->format('Y-m-d')) }}" max="{{ now()->format('Y-m-d') }}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50" required>
+                        <input type="date" name="date" id="date" value="{{ old('date', $progress->date->format('Y-m-d')) }}" max="{{ now()->format('Y-m-d') }}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50" required>
                         @error('date')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -45,7 +45,7 @@
                     
                     <div class="md:col-span-2">
                         <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                        <textarea name="notes" id="notes" rows="3" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50">{{ old('notes', $workoutLog->notes) }}</textarea>
+                        <textarea name="notes" id="notes" rows="3" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50">{{ old('notes', $progress->notes) }}</textarea>
                         @error('notes')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -53,7 +53,7 @@
 
                     <div class="md:col-span-2">
                         <div class="flex items-center">
-                            <input type="checkbox" name="completed" id="completed" value="1" {{ old('completed', $workoutLog->completed) ? 'checked' : '' }} class="h-4 w-4 text-splitify-teal border-gray-300 rounded focus:ring-splitify-teal">
+                            <input type="checkbox" name="completed" id="completed" value="1" {{ old('completed', $progress->completed) ? 'checked' : '' }} class="h-4 w-4 text-splitify-teal border-gray-300 rounded focus:ring-splitify-teal">
                             <label for="completed" class="ml-2 block text-sm text-gray-700">
                                 Mark this workout as completed 
                                 <span class="text-xs text-gray-500">(Only completed workouts will appear on the dashboard)</span>
@@ -208,7 +208,7 @@
             
             <!-- Form Actions -->
             <div class="px-6 py-4 bg-gray-50 text-right space-x-3">
-                <a href="{{ route('progress.index') }}" class="inline-flex justify-center py-2 px-6 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-splitify-teal">
+                <a href="{{ url('/progress') }}" class="inline-flex justify-center py-2 px-6 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-splitify-teal">
                     Cancel
                 </a>
                 <button type="submit" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-splitify-teal hover:bg-splitify-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-splitify-teal">

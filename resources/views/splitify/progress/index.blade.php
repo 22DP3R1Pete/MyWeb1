@@ -2,7 +2,7 @@
     <div class="mb-6">
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900">{{ __('Progress Tracking') }}</h1>
-            <a href="{{ route('progress.create') }}" class="inline-flex items-center px-4 py-2 bg-splitify-teal border border-transparent rounded-full text-sm font-semibold text-white shadow-sm hover:bg-splitify-navy transition-all duration-300 ease-in-out">
+            <a href="{{ url('/progress/create') }}" class="inline-flex items-center px-4 py-2 bg-splitify-teal border border-transparent rounded-full text-sm font-semibold text-white shadow-sm hover:bg-splitify-navy transition-all duration-300 ease-in-out">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -79,7 +79,7 @@
 
     <!-- Filter & Search -->
     <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-        <form action="{{ route('progress.index') }}" method="GET" class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
+        <form action="{{ url('/progress') }}" method="GET" class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
             <div class="flex-1">
                 <label for="timeframe" class="block text-xs font-medium text-gray-500 mb-1">{{ __('Timeframe') }}</label>
                 <select id="timeframe" name="timeframe" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50 text-sm">
@@ -138,18 +138,24 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end items-center space-x-2">
-                                    <a href="{{ route('progress.show', $log) }}" class="text-splitify-teal hover:text-splitify-navy">
+                                    <a href="{{ url('/progress/' . $log->id) }}" class="inline-flex items-center px-3 py-1 bg-splitify-teal border border-transparent rounded-md text-xs font-medium text-white hover:bg-splitify-navy transition-all duration-200">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
                                         {{ __('View') }}
                                     </a>
-                                    <a href="{{ route('progress.edit', $log) }}" class="text-gray-400 hover:text-splitify-teal">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <a href="{{ url('/progress/' . $log->id . '/edit') }}" class="inline-flex items-center px-3 py-1 bg-blue-500 border border-transparent rounded-md text-xs font-medium text-white hover:bg-blue-600 transition-all duration-200">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
+                                        {{ __('Edit') }}
                                     </a>
-                                    <button onclick="confirmDelete('{{ $log->id }}')" class="text-gray-400 hover:text-red-500">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <button onclick="confirmDelete('{{ $log->id }}')" class="inline-flex items-center px-3 py-1 bg-red-500 border border-transparent rounded-md text-xs font-medium text-white hover:bg-red-600 transition-all duration-200">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
+                                        {{ __('Delete') }}
                                     </button>
                                 </div>
                             </td>
@@ -162,7 +168,7 @@
                                 </svg>
                                 <h3 class="text-lg font-medium text-gray-900 mb-1">{{ __('No workout logs found') }}</h3>
                                 <p class="text-sm text-gray-500 mb-4">{{ __('Start logging your workouts to track your progress over time.') }}</p>
-                                <a href="{{ route('progress.create') }}" class="inline-flex items-center px-4 py-2 bg-splitify-teal border border-transparent rounded-full text-sm font-semibold text-white shadow-sm hover:bg-splitify-navy transition-all duration-300 ease-in-out">
+                                <a href="{{ url('/progress/create') }}" class="inline-flex items-center px-4 py-2 bg-splitify-teal border border-transparent rounded-full text-sm font-semibold text-white shadow-sm hover:bg-splitify-navy transition-all duration-300 ease-in-out">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                     </svg>
@@ -182,7 +188,7 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div x-data="{ open: false, logId: null }" x-show="open" x-cloak class="fixed inset-0 z-50 overflow-y-auto" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+    <div id="deleteModal" x-data="{ open: false, logId: null }" x-show="open" x-cloak class="fixed inset-0 z-50 overflow-y-auto" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 transition-opacity" aria-hidden="true" x-show="open" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
                 <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
@@ -200,12 +206,13 @@
                             <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">{{ __('Delete Workout Log') }}</h3>
                             <div class="mt-2">
                                 <p class="text-sm text-gray-500">{{ __('Are you sure you want to delete this workout log? This action cannot be undone.') }}</p>
+                                <p x-text="'Log ID: ' + logId" class="text-xs text-gray-400 mt-1"></p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <form id="deleteForm" method="POST" x-bind:action="'/progress/' + logId">
+                    <form id="deleteForm" method="POST" :action="'{{ url('/progress') }}/' + logId">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">{{ __('Delete') }}</button>
@@ -216,17 +223,92 @@
         </div>
     </div>
 
+    <!-- Alpine.js Status Check -->
+    <div class="hidden text-xs text-gray-400 mt-4 p-2">
+        <div x-data="{ alpineLoaded: true }" x-init="console.log('Alpine is working')">
+            <span x-show="alpineLoaded">Alpine.js is working</span>
+            <span x-show="!alpineLoaded">Alpine.js is not working</span>
+        </div>
+    </div>
+
     <script>
         function confirmDelete(logId) {
-            Alpine.store('deleteModal').logId = logId;
-            Alpine.store('deleteModal').open = true;
+            // Ensure logId is defined
+            if (!logId) {
+                console.error('Log ID is undefined');
+                return;
+            }
+            
+            try {
+                // Get the Alpine.js component for the modal
+                const modalElement = document.getElementById('deleteModal');
+                if (!modalElement) {
+                    console.error('Delete modal element not found');
+                    return;
+                }
+                
+                const deleteModal = modalElement.__x;
+                
+                if (deleteModal && deleteModal.$data) {
+                    // Set the logId and open the modal
+                    deleteModal.$data.logId = logId;
+                    deleteModal.$data.open = true;
+                    
+                    // Also update the form action directly as a backup
+                    const form = document.getElementById('deleteForm');
+                    if (form) {
+                        form.action = '{{ url('/progress') }}/' + logId;
+                    }
+                } else {
+                    // Fallback to basic confirmation if Alpine isn't initialized properly
+                    console.warn('Alpine.js modal not initialized properly, using fallback');
+                    submitDeleteForm(logId);
+                }
+            } catch (error) {
+                console.error('Error handling delete confirmation:', error);
+                // Use the fallback method
+                submitDeleteForm(logId);
+            }
         }
-
-        document.addEventListener('alpine:init', () => {
-            Alpine.store('deleteModal', {
-                open: false,
-                logId: null
-            });
+        
+        function submitDeleteForm(logId) {
+            if (confirm("{{ __('Are you sure you want to delete this workout log?') }}")) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ url('/progress') }}/' + logId;
+                
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                
+                const method = document.createElement('input');
+                method.type = 'hidden';
+                method.name = '_method';
+                method.value = 'DELETE';
+                
+                form.appendChild(csrfToken);
+                form.appendChild(method);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+        
+        // Add direct event listener to the delete form as a backup
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteForm = document.getElementById('deleteForm');
+            const deleteModal = document.getElementById('deleteModal');
+            
+            if (deleteForm && deleteModal && deleteModal.__x) {
+                deleteForm.addEventListener('submit', function(event) {
+                    const logId = deleteModal.__x.$data.logId;
+                    if (!deleteForm.action.includes(logId)) {
+                        event.preventDefault();
+                        deleteForm.action = '{{ url('/progress') }}/' + logId;
+                        deleteForm.submit();
+                    }
+                });
+            }
         });
     </script>
 </x-splitify-layout> 

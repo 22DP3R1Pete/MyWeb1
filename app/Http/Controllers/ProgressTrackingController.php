@@ -141,52 +141,52 @@ class ProgressTrackingController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(WorkoutLog $workoutLog)
+    public function show(WorkoutLog $progress)
     {
         // Make sure the log belongs to the user
-        if ($workoutLog->user_id !== Auth::id()) {
+        if ($progress->user_id !== Auth::id()) {
             return redirect()->route('progress.index')->with('error', 'Unauthorized access to this workout log.');
         }
         
         // Load relationships
-        $workoutLog->load('workoutPlan', 'exercises');
+        $progress->load('workoutPlan', 'exercises');
         
         // Get previous logs for comparison
         $previousLogs = WorkoutLog::where('user_id', Auth::id())
-            ->where('workout_plan_id', $workoutLog->workout_plan_id)
-            ->where('date', '<', $workoutLog->date)
+            ->where('workout_plan_id', $progress->workout_plan_id)
+            ->where('date', '<', $progress->date)
             ->orderBy('date', 'desc')
             ->limit(1)
             ->with('exercises')
             ->get();
             
-        return view('splitify.progress.show', compact('workoutLog', 'previousLogs'));
+        return view('splitify.progress.show', compact('progress', 'previousLogs'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(WorkoutLog $workoutLog)
+    public function edit(WorkoutLog $progress)
     {
         // Make sure the log belongs to the user
-        if ($workoutLog->user_id !== Auth::id()) {
+        if ($progress->user_id !== Auth::id()) {
             return redirect()->route('progress.index')->with('error', 'Unauthorized access to this workout log.');
         }
         
         $workoutPlans = WorkoutPlan::where('user_id', Auth::id())->get();
         $exercises = Exercise::orderBy('name')->get();
-        $logExercises = $workoutLog->exercises;
+        $logExercises = $progress->exercises;
         
-        return view('splitify.progress.edit', compact('workoutLog', 'workoutPlans', 'exercises', 'logExercises'));
+        return view('splitify.progress.edit', compact('progress', 'workoutPlans', 'exercises', 'logExercises'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, WorkoutLog $workoutLog)
+    public function update(Request $request, WorkoutLog $progress)
     {
         // Make sure the log belongs to the user
-        if ($workoutLog->user_id !== Auth::id()) {
+        if ($progress->user_id !== Auth::id()) {
             return redirect()->route('progress.index')->with('error', 'Unauthorized access to this workout log.');
         }
         
@@ -209,12 +209,12 @@ class ProgressTrackingController extends Controller
         }
         
         // Update the workout log
-        $workoutLog->workout_plan_id = $validated['workout_plan_id'];
-        $workoutLog->date = $validated['date'];
-        $workoutLog->notes = $validated['notes'] ?? null;
-        $workoutLog->completed_exercises = count($validated['exercises']);
-        $workoutLog->completed = $request->has('completed');
-        $workoutLog->save();
+        $progress->workout_plan_id = $validated['workout_plan_id'];
+        $progress->date = $validated['date'];
+        $progress->notes = $validated['notes'] ?? null;
+        $progress->completed_exercises = count($validated['exercises']);
+        $progress->completed = $request->has('completed');
+        $progress->save();
         
         // Sync exercises with their performance data
         $exercisesData = [];
@@ -226,28 +226,28 @@ class ProgressTrackingController extends Controller
                 'notes' => $request->exercise_notes[$index] ?? null,
             ];
         }
-        $workoutLog->exercises()->sync($exercisesData);
+        $progress->exercises()->sync($exercisesData);
         
         return redirect()
-            ->route('progress.show', $workoutLog)
+            ->route('progress.show', $progress)
             ->with('success', 'Workout log updated successfully!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(WorkoutLog $workoutLog)
+    public function destroy(WorkoutLog $progress)
     {
         // Make sure the log belongs to the user
-        if ($workoutLog->user_id !== Auth::id()) {
+        if ($progress->user_id !== Auth::id()) {
             return redirect()->route('progress.index')->with('error', 'Unauthorized access to this workout log.');
         }
         
         // Detach exercises
-        $workoutLog->exercises()->detach();
+        $progress->exercises()->detach();
         
         // Delete the log
-        $workoutLog->delete();
+        $progress->delete();
         
         return redirect()
             ->route('progress.index')

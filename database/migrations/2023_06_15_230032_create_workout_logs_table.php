@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Only create the table if it doesn't already exist
+        // Create workout_plans table if it doesn't exist
         if (!Schema::hasTable('workout_plans')) {
             Schema::create('workout_plans', function (Blueprint $table) {
                 $table->id();
@@ -32,6 +32,22 @@ return new class extends Migration
                 $table->index('difficulty_level');
             });
         }
+        
+        // Only create the table if it doesn't already exist
+        if (!Schema::hasTable('workout_logs')) {
+            Schema::create('workout_logs', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users');
+                $table->foreignId('workout_plan_id')->nullable()->constrained('workout_plans');
+                $table->date('date');
+                $table->boolean('completed')->default(false);
+                $table->integer('completed_exercises')->default(0);
+                $table->text('notes')->nullable();
+                $table->timestamps();
+                
+                $table->index(['user_id', 'date']);
+            });
+        }
     }
 
     /**
@@ -39,6 +55,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('workout_plans');
+        Schema::dropIfExists('workout_logs');
+        // Don't drop workout_plans as it might be used by other tables
     }
-};
+}; 
