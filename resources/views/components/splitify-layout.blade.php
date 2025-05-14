@@ -30,6 +30,11 @@
             color: #333;
         }
         
+        /* Alpine.js utility to hide elements before initialization */
+        [x-cloak] {
+            display: none !important;
+        }
+        
         .sidebar-link {
             display: flex;
             align-items: center;
@@ -313,5 +318,8 @@
             </main>
         </div>
     </div>
+    
+    <!-- Scripts Stack -->
+    @stack('scripts')
 </body>
 </html> 

@@ -168,71 +168,79 @@ class WorkoutPlanController extends Controller
     {
         $this->authorize('update', $workoutPlan);
         
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'duration_weeks' => 'required|integer|min:1|max:52',
-            'exercises' => 'required|array',
-            'exercises.*' => 'exists:exercises,id',
-            'day' => 'required|array',
-            'day.*' => 'integer|min:1|max:7',
-            'difficulty_level' => 'nullable|string|in:beginner,intermediate,advanced',
-            'sessions_per_week' => 'nullable|integer|min:1|max:7'
-        ]);
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'duration_weeks' => 'required|integer|min:1|max:52',
+                'exercises_validation' => 'required',
+                'exercises' => 'required|array',
+                'exercises.*' => 'exists:exercises,id',
+                'day' => 'required|array',
+                'day.*' => 'integer|min:1|max:7',
+                'difficulty_level' => 'nullable|string|in:beginner,intermediate,advanced',
+                'sessions_per_week' => 'nullable|integer|min:1|max:7'
+            ]);
 
-        $workoutPlan->title = $validated['title'];
-        $workoutPlan->description = $validated['description'];
-        $workoutPlan->duration_weeks = $validated['duration_weeks'];
-        $workoutPlan->difficulty_level = $validated['difficulty_level'] ?? $workoutPlan->difficulty_level;
-        $workoutPlan->sessions_per_week = $validated['sessions_per_week'] ?? $workoutPlan->sessions_per_week;
-        $workoutPlan->save();
+            $workoutPlan->title = $validated['title'];
+            $workoutPlan->description = $validated['description'];
+            $workoutPlan->duration_weeks = $validated['duration_weeks'];
+            $workoutPlan->difficulty_level = $validated['difficulty_level'] ?? $workoutPlan->difficulty_level;
+            $workoutPlan->sessions_per_week = $validated['sessions_per_week'] ?? $workoutPlan->sessions_per_week;
+            $workoutPlan->save();
 
-        // Sync exercises with pivot data
-        if (isset($validated['exercises'])) {
-            // Remove all existing splits and their exercises
-            $workoutPlan->splits()->delete();
-            
-            // Group exercises by day
-            $exercisesByDay = [];
-            foreach ($request->exercises as $index => $exerciseId) {
-                $day = $request->day[$index] ?? 1;
+            // Sync exercises with pivot data
+            if (isset($validated['exercises'])) {
+                // Remove all existing splits and their exercises
+                $workoutPlan->splits()->delete();
                 
-                if (!isset($exercisesByDay[$day])) {
-                    $exercisesByDay[$day] = [];
+                // Group exercises by day
+                $exercisesByDay = [];
+                foreach ($request->exercises as $index => $exerciseId) {
+                    $day = $request->day[$index] ?? 1;
+                    
+                    if (!isset($exercisesByDay[$day])) {
+                        $exercisesByDay[$day] = [];
+                    }
+                    
+                    $exercisesByDay[$day][] = [
+                        'exercise_id' => $exerciseId,
+                        'sets' => $request->sets[$index] ?? 3,
+                        'reps' => $request->reps[$index] ?? 10,
+                        'rest' => $request->rest[$index] ?? 60,
+                        'order' => count($exercisesByDay[$day]) + 1
+                    ];
                 }
                 
-                $exercisesByDay[$day][] = [
-                    'exercise_id' => $exerciseId,
-                    'sets' => $request->sets[$index] ?? 3,
-                    'reps' => $request->reps[$index] ?? 10,
-                    'rest' => $request->rest[$index] ?? 60,
-                    'order' => count($exercisesByDay[$day]) + 1
-                ];
-            }
-            
-            // Create splits for each day and attach exercises
-            foreach ($exercisesByDay as $day => $exercises) {
-                $split = $workoutPlan->splits()->create([
-                    'name' => 'Day ' . $day,
-                    'description' => 'Workout for day ' . $day,
-                    'day_of_week' => $day,
-                    'order' => $day
-                ]);
-                
-                foreach ($exercises as $exerciseData) {
-                    $split->exercises()->attach($exerciseData['exercise_id'], [
-                        'sets' => $exerciseData['sets'],
-                        'reps' => $exerciseData['reps'],
-                        'rest_period' => $exerciseData['rest'],
-                        'order' => $exerciseData['order']
+                // Create splits for each day and attach exercises
+                foreach ($exercisesByDay as $day => $exercises) {
+                    $split = $workoutPlan->splits()->create([
+                        'name' => 'Day ' . $day,
+                        'description' => 'Workout for day ' . $day,
+                        'day_of_week' => $day,
+                        'order' => $day
                     ]);
+                    
+                    foreach ($exercises as $exerciseData) {
+                        $split->exercises()->attach($exerciseData['exercise_id'], [
+                            'sets' => $exerciseData['sets'],
+                            'reps' => $exerciseData['reps'],
+                            'rest_period' => $exerciseData['rest'],
+                            'order' => $exerciseData['order']
+                        ]);
+                    }
                 }
             }
-        }
 
-        return redirect()
-            ->route('workout-plans.show', $workoutPlan)
-            ->with('success', 'Workout plan updated successfully!');
+            return redirect()
+                ->route('workout-plans.show', $workoutPlan)
+                ->with('success', 'Workout plan updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to update workout plan. ' . $e->getMessage()]);
+        }
     }
 
     /**

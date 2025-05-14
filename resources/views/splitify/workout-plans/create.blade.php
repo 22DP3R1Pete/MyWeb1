@@ -46,15 +46,18 @@
             filteredExercises: [],
             dayNames: ['Push Day', 'Pull Day', 'Leg Day', 'Upper Body', 'Lower Body', 'Rest Day', 'Full Body'],
             dayName: '',
+            dayNamesByDay: {},
             exercisesByDay: {},
             allExercises: [],
             init() {
                 this.availableExercises = JSON.parse(document.getElementById('availableExercises').textContent);
                 this.exercises = [];
                 this.exercisesByDay = {};
+                this.dayNamesByDay = {};
                 this.allExercises = [];
                 for (let i = 1; i <= 7; i++) {
                     this.exercisesByDay[i] = [];
+                    this.dayNamesByDay[i] = '';
                 }
                 this.filteredExercises = this.availableExercises;
             },
@@ -178,22 +181,147 @@
             },
             selectTemplate(template) {
                 this.selectedTemplate = template;
+                
+                // Store original values
+                const originalTitle = this.planTitle;
+                const originalDescription = this.planDescription;
+                const originalDuration = this.planDuration;
+                
+                // Only set default values if the fields are empty
                 if (template.name === 'Push/Pull/Legs (PPL)') {
-                    this.planTitle = 'Push/Pull/Legs Split';
-                    this.planDescription = 'A 6-day split targeting push muscles (chest, shoulders, triceps), pull muscles (back, biceps), and legs.';
-                    this.planDuration = 8;
+                    // Only update fields that are empty
+                    this.planTitle = originalTitle || 'Push/Pull/Legs Split';
+                    this.planDescription = originalDescription || 'A 6-day split targeting push muscles (chest, shoulders, triceps), pull muscles (back, biceps), and legs.';
+                    this.planDuration = originalDuration || 8;
+                    
+                    // Clear current exercises
+                    this.exercisesByDay = {};
+                    for (let i = 1; i <= 7; i++) {
+                        this.exercisesByDay[i] = [];
+                    }
+                    
+                    // Populate with template exercises
+                    // Day 1 - Push
+                    this.populateTemplateDay(1, ['chest', 'shoulders', 'triceps'], 'Push Day');
+                    
+                    // Day 2 - Pull
+                    this.populateTemplateDay(2, ['back', 'biceps', 'forearms'], 'Pull Day');
+                    
+                    // Day 3 - Legs
+                    this.populateTemplateDay(3, ['legs', 'calves', 'glutes'], 'Leg Day');
+                    
+                    // Day 4 - Push
+                    this.populateTemplateDay(4, ['chest', 'shoulders', 'triceps'], 'Push Day');
+                    
+                    // Day 5 - Pull
+                    this.populateTemplateDay(5, ['back', 'biceps', 'forearms'], 'Pull Day');
+                    
+                    // Day 6 - Legs
+                    this.populateTemplateDay(6, ['legs', 'calves', 'glutes'], 'Leg Day');
+                    
                 } else if (template.name === 'Upper/Lower Split') {
-                    this.planTitle = 'Upper/Lower Split';
-                    this.planDescription = 'A 4-day split alternating between upper body and lower body workouts.';
-                    this.planDuration = 8;
+                    this.planTitle = originalTitle || 'Upper/Lower Split';
+                    this.planDescription = originalDescription || 'A 4-day split alternating between upper body and lower body workouts.';
+                    this.planDuration = originalDuration || 8;
+                    
+                    // Clear current exercises
+                    this.exercisesByDay = {};
+                    for (let i = 1; i <= 7; i++) {
+                        this.exercisesByDay[i] = [];
+                    }
+                    
+                    // Day 1 - Upper
+                    this.populateTemplateDay(1, ['chest', 'back', 'shoulders', 'triceps', 'biceps'], 'Upper Body');
+                    
+                    // Day 2 - Lower
+                    this.populateTemplateDay(2, ['legs', 'calves', 'glutes'], 'Lower Body');
+                    
+                    // Day 3 - Rest
+                    
+                    // Day 4 - Upper
+                    this.populateTemplateDay(4, ['chest', 'back', 'shoulders', 'triceps', 'biceps'], 'Upper Body');
+                    
+                    // Day 5 - Lower
+                    this.populateTemplateDay(5, ['legs', 'calves', 'glutes'], 'Lower Body');
+                    
                 } else if (template.name === 'Full Body') {
-                    this.planTitle = 'Full Body Workout';
-                    this.planDescription = 'A full body workout performed 3 times per week.';
-                    this.planDuration = 8;
+                    this.planTitle = originalTitle || 'Full Body Workout';
+                    this.planDescription = originalDescription || 'A full body workout performed 3 times per week.';
+                    this.planDuration = originalDuration || 8;
+                    
+                    // Clear current exercises
+                    this.exercisesByDay = {};
+                    for (let i = 1; i <= 7; i++) {
+                        this.exercisesByDay[i] = [];
+                    }
+                    
+                    // Day 1 - Full Body
+                    this.populateTemplateDay(1, ['chest', 'back', 'shoulders', 'arms', 'legs'], 'Full Body');
+                    
+                    // Day 3 - Full Body
+                    this.populateTemplateDay(3, ['chest', 'back', 'shoulders', 'arms', 'legs'], 'Full Body');
+                    
+                    // Day 5 - Full Body
+                    this.populateTemplateDay(5, ['chest', 'back', 'shoulders', 'arms', 'legs'], 'Full Body');
+                    
                 } else if (template.name === 'Bro Split') {
-                    this.planTitle = 'Bro Split';
-                    this.planDescription = 'A 5-day split with each day focusing on a different muscle group.';
-                    this.planDuration = 8;
+                    this.planTitle = originalTitle || 'Bro Split';
+                    this.planDescription = originalDescription || 'A 5-day split with each day focusing on a different muscle group.';
+                    this.planDuration = originalDuration || 8;
+                    
+                    // Clear current exercises
+                    this.exercisesByDay = {};
+                    for (let i = 1; i <= 7; i++) {
+                        this.exercisesByDay[i] = [];
+                    }
+                    
+                    // Day 1 - Chest
+                    this.populateTemplateDay(1, ['chest'], 'Chest Day');
+                    
+                    // Day 2 - Back
+                    this.populateTemplateDay(2, ['back'], 'Back Day');
+                    
+                    // Day 3 - Shoulders
+                    this.populateTemplateDay(3, ['shoulders'], 'Shoulder Day');
+                    
+                    // Day 4 - Arms
+                    this.populateTemplateDay(4, ['biceps', 'triceps', 'forearms'], 'Arms Day');
+                    
+                    // Day 5 - Legs
+                    this.populateTemplateDay(5, ['legs', 'calves', 'glutes'], 'Leg Day');
+                }
+            },
+            // New function to populate template exercises
+            populateTemplateDay(day, muscleGroups, dayName) {
+                // Find exercises that match the muscle groups
+                const matchingExercises = this.availableExercises.filter(e => 
+                    muscleGroups.some(mg => 
+                        e.muscle_group.toLowerCase().includes(mg.toLowerCase())
+                    )
+                );
+                
+                // Add up to 5 exercises for this day
+                const exercisesToAdd = matchingExercises.slice(0, 5);
+                
+                // Add exercises to the day
+                exercisesToAdd.forEach(exercise => {
+                    this.exercisesByDay[day].push({
+                        id: exercise.id,
+                        name: exercise.name,
+                        muscle_group: exercise.muscle_group,
+                        day: day,
+                        sets: 3,
+                        reps: 10,
+                        rest: 60
+                    });
+                });
+                
+                // Store the day name in our storage
+                this.dayNamesByDay[day] = dayName;
+                
+                // Save the day name when the active day is the current day being populated
+                if (this.activeDay === day) {
+                    this.dayName = dayName;
                 }
             }
         }" class="space-y-6" id="workoutForm">
@@ -287,7 +415,7 @@
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-lg font-medium text-gray-900">{{ __('Add Exercises') }}</h2>
                         <div class="flex space-x-2">
-                            <select x-model="activeDay" class="rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50">
+                            <select x-model="activeDay" @change="dayName = dayNamesByDay[activeDay] || ''" class="rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50">
                                 <template x-for="day in days" :key="day">
                                     <option :value="day" x-text="'Day ' + day"></option>
                                 </template>
@@ -346,7 +474,7 @@
                             <h3 class="font-medium text-sm uppercase text-gray-500 mb-1">
                                 {{ __('Day') }} <span x-text="activeDay"></span> {{ __('Exercises') }}
                             </h3>
-                            <input type="text" x-model="dayName" placeholder="Day name (e.g. Push Day)" class="w-full text-sm mb-3 p-2 border rounded">
+                            <input type="text" x-model="dayName" @input="dayNamesByDay[activeDay] = dayName" placeholder="Day name (e.g. Push Day)" class="w-full text-sm mb-3 p-2 border rounded">
                             
                             <div class="divide-y">
                                 <template x-for="(exercise, index) in exercisesByDay[activeDay]" :key="index">

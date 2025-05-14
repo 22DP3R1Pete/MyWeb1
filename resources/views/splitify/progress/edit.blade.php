@@ -1,4 +1,55 @@
 <x-splitify-layout title="Edit Workout Log - Splitify">
+    <!-- Notification Banner -->
+    <div x-data="{ 
+        show: false, 
+        message: '', 
+        type: 'info',
+        showNotification(msg, t = 'info') {
+            this.message = msg;
+            this.type = t;
+            this.show = true;
+            setTimeout(() => { this.show = false }, 5000);
+        }
+    }" 
+    x-cloak
+    @weight-limit-exceeded.window="showNotification('Weight value exceeds the maximum limit of 1000 lbs', 'error')"
+    @validation-error.window="showNotification($event.detail.message, 'error')"
+    id="notification-container">
+        <div 
+            x-show="show" 
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform scale-90"
+            x-transition:enter-end="opacity-100 transform scale-100"
+            x-transition:leave="transition ease-in duration-300"
+            x-transition:leave-start="opacity-100 transform scale-100"
+            x-transition:leave-end="opacity-0 transform scale-90"
+            class="fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-md"
+            :class="{
+                'bg-red-100 text-red-800 border border-red-200': type === 'error',
+                'bg-green-100 text-green-800 border border-green-200': type === 'success',
+                'bg-blue-100 text-blue-800 border border-blue-200': type === 'info'
+            }"
+        >
+            <div class="flex items-center">
+                <svg x-show="type === 'error'" class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                <svg x-show="type === 'success'" class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <svg x-show="type === 'info'" class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 9a1 1 0 01-2 0v-4a1 1 0 112 0v4z" clip-rule="evenodd"></path>
+                </svg>
+                <p x-text="message"></p>
+            </div>
+            <button @click="show = false" class="absolute top-1 right-1 text-gray-500 hover:text-gray-800">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
     <div class="mb-6">
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900">Edit Workout Log</h1>
@@ -182,7 +233,15 @@
                                             <input type="number" :name="'reps[]'" x-model="exercise.reps" min="1" max="100" class="w-16 rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50">
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <input type="number" :name="'weight[]'" x-model="exercise.weight" min="0" step="0.5" class="w-20 rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50">
+                                            <input type="number" :name="'weight[]'" x-model="exercise.weight" min="0" max="1000" step="0.5" class="w-20 rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50"
+                                            @input="
+                                                if (parseFloat($event.target.value) > 1000) {
+                                                    window.dispatchEvent(new CustomEvent('weight-limit-exceeded'));
+                                                    $event.target.value = 1000;
+                                                    exercise.weight = 1000;
+                                                }
+                                            ">
+                                            <div class="text-xs text-gray-500 mt-1">Max: 1000 lbs</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <input type="text" :name="'exercise_notes[]'" x-model="exercise.notes" placeholder="Optional" class="w-32 rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50">

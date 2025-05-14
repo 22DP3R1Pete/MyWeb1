@@ -21,9 +21,15 @@
         <p class="mt-1 text-sm text-gray-500">{{ __('Update your workout plan details and exercises') }}</p>
     </div>
 
-    <form action="{{ route('workout-plans.update', $workoutPlan) }}" method="POST" id="editWorkoutForm">
+    <form action="{{ route('workout-plans.update', $workoutPlan) }}" method="POST" id="editWorkoutForm" @submit="if(exercises.length === 0) { event.preventDefault(); alert('Please add at least one exercise to your workout plan.'); return false; }">
         @csrf
         @method('PUT')
+        
+        @if ($errors->has('error'))
+        <div class="bg-red-50 text-red-700 p-4 mb-6 rounded-lg">
+            {{ $errors->first('error') }}
+        </div>
+        @endif
         
         <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
             <!-- Plan Details -->
@@ -41,13 +47,13 @@
                     
                     <div class="md:flex md:space-x-4">
                         <div class="flex-1 mb-4 md:mb-0">
-                            <label for="difficulty" class="block text-sm font-medium text-gray-700 mb-1">{{ __('Difficulty') }} <span class="text-red-500">*</span></label>
-                            <select name="difficulty" id="difficulty" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50" required>
-                                <option value="beginner" {{ (old('difficulty', $workoutPlan->difficulty) == 'beginner') ? 'selected' : '' }}>{{ __('Beginner') }}</option>
-                                <option value="intermediate" {{ (old('difficulty', $workoutPlan->difficulty) == 'intermediate') ? 'selected' : '' }}>{{ __('Intermediate') }}</option>
-                                <option value="advanced" {{ (old('difficulty', $workoutPlan->difficulty) == 'advanced') ? 'selected' : '' }}>{{ __('Advanced') }}</option>
+                            <label for="difficulty_level" class="block text-sm font-medium text-gray-700 mb-1">{{ __('Difficulty') }} <span class="text-red-500">*</span></label>
+                            <select name="difficulty_level" id="difficulty_level" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50" required>
+                                <option value="beginner" {{ (old('difficulty_level', $workoutPlan->difficulty_level) == 'beginner') ? 'selected' : '' }}>{{ __('Beginner') }}</option>
+                                <option value="intermediate" {{ (old('difficulty_level', $workoutPlan->difficulty_level) == 'intermediate') ? 'selected' : '' }}>{{ __('Intermediate') }}</option>
+                                <option value="advanced" {{ (old('difficulty_level', $workoutPlan->difficulty_level) == 'advanced') ? 'selected' : '' }}>{{ __('Advanced') }}</option>
                             </select>
-                            @error('difficulty')
+                            @error('difficulty_level')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
@@ -90,6 +96,8 @@
                         reps: pe.pivot.reps,
                         rest: pe.pivot.rest
                     }));
+                    
+                    this.updateExercisesValidation();
                 },
                 addExercise() {
                     const select = document.getElementById('exerciseSelect');
@@ -107,9 +115,19 @@
                         reps: 10,
                         rest: 60
                     });
+                    
+                    this.updateExercisesValidation();
                 },
                 removeExercise(index) {
                     this.exercises.splice(index, 1);
+                    this.updateExercisesValidation();
+                },
+                updateExercisesValidation() {
+                    // Check if element exists before setting its value
+                    const validationInput = document.getElementById('exercisesValidation');
+                    if (validationInput) {
+                        validationInput.value = this.exercises.length > 0 ? 'valid' : '';
+                    }
                 }
             }">
                 <h2 class="text-lg font-medium text-gray-900 mb-4">{{ __('Exercises') }}</h2>
@@ -210,6 +228,10 @@
                 @error('exercises')
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                 @enderror
+                
+                @error('exercises_validation')
+                    <p class="mt-2 text-sm text-red-600">{{ __('You must add at least one exercise to your workout plan.') }}</p>
+                @enderror
             </div>
             
             <!-- Form Actions -->
@@ -217,7 +239,8 @@
                 <a href="{{ route('workout-plans.show', $workoutPlan) }}" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-splitify-teal">
                     {{ __('Cancel') }}
                 </a>
-                <button type="button" @click="if(document.getElementById('editWorkoutForm').checkValidity() && exercises.length > 0) { document.getElementById('editWorkoutForm').submit(); }" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-splitify-teal hover:bg-splitify-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-splitify-teal">
+                <input type="hidden" id="exercisesValidation" name="exercises_validation" value="" required>
+                <button type="submit" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-splitify-teal hover:bg-splitify-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-splitify-teal">
                     {{ __('Save Changes') }}
                 </button>
             </div>

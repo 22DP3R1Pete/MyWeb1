@@ -80,12 +80,35 @@ class ProgressTrackingController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
         $workoutPlans = WorkoutPlan::where('user_id', Auth::id())->get();
         $exercises = Exercise::orderBy('name')->get();
         
-        return view('splitify.progress.create', compact('workoutPlans', 'exercises'));
+        // Check if workout_plan_id is specified in the request
+        $selectedPlanId = $request->input('workout_plan_id');
+        
+        // Initialize planExercises as null
+        $planExercises = null;
+        
+        // If a workout plan is selected, get its exercises
+        if ($selectedPlanId) {
+            $workoutPlan = WorkoutPlan::findOrFail($selectedPlanId);
+            
+            // Make sure this plan belongs to the user
+            if ($workoutPlan->user_id === Auth::id()) {
+                // Get unique exercises used in this workout plan through splits
+                $planExercises = $workoutPlan->splits()
+                    ->with('exercises')
+                    ->get()
+                    ->pluck('exercises')
+                    ->flatten()
+                    ->unique('id')
+                    ->values();
+            }
+        }
+        
+        return view('splitify.progress.create', compact('workoutPlans', 'exercises', 'selectedPlanId', 'planExercises'));
     }
 
     /**
@@ -101,7 +124,7 @@ class ProgressTrackingController extends Controller
             'exercises.*' => 'exists:exercises,id',
             'sets.*' => 'required|integer|min:1',
             'reps.*' => 'required|integer|min:1',
-            'weight.*' => 'required|numeric|min:0',
+            'weight.*' => 'required|numeric|min:0|max:1000',
             'completed' => 'nullable|boolean'
         ]);
         
@@ -198,7 +221,7 @@ class ProgressTrackingController extends Controller
             'exercises.*' => 'exists:exercises,id',
             'sets.*' => 'required|integer|min:1',
             'reps.*' => 'required|integer|min:1',
-            'weight.*' => 'required|numeric|min:0',
+            'weight.*' => 'required|numeric|min:0|max:1000',
             'completed' => 'nullable|boolean'
         ]);
         
