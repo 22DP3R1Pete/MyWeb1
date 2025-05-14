@@ -158,11 +158,94 @@
                     <h2 class="text-lg font-semibold mb-4">Your Performance</h2>
                     @if(isset($recentWorkouts) && count($recentWorkouts) > 0)
                         <div class="h-64 w-full">
-                            <!-- Chart can be implemented here -->
-                            <div class="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
-                                <p class="text-gray-400">Performance chart will appear here</p>
-                            </div>
+                            <!-- Performance Chart -->
+                            <canvas id="performanceChart"></canvas>
                         </div>
+                        
+                        @push('scripts')
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const ctx = document.getElementById('performanceChart').getContext('2d');
+                                
+                                // Chart data from the controller
+                                const chartData = @json($performanceData);
+                                
+                                const chart = new Chart(ctx, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: chartData.labels,
+                                        datasets: [
+                                            {
+                                                label: 'Volume Lifted (lbs)',
+                                                data: chartData.volume,
+                                                backgroundColor: 'rgba(20, 184, 166, 0.8)',
+                                                borderColor: 'rgba(20, 184, 166, 1)',
+                                                borderWidth: 1,
+                                                yAxisID: 'y'
+                                            },
+                                            {
+                                                label: 'Workouts Completed',
+                                                data: chartData.workouts,
+                                                type: 'line',
+                                                borderColor: '#1e40af',
+                                                backgroundColor: 'rgba(30, 64, 175, 0.1)',
+                                                borderWidth: 2,
+                                                pointBackgroundColor: '#1e40af',
+                                                pointRadius: 4,
+                                                tension: 0.1,
+                                                fill: false,
+                                                yAxisID: 'y1'
+                                            }
+                                        ]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                position: 'top',
+                                            },
+                                            tooltip: {
+                                                mode: 'index',
+                                                intersect: false,
+                                            }
+                                        },
+                                        scales: {
+                                            y: {
+                                                type: 'linear',
+                                                display: true,
+                                                position: 'left',
+                                                title: {
+                                                    display: true,
+                                                    text: 'Volume (lbs)'
+                                                },
+                                                beginAtZero: true
+                                            },
+                                            y1: {
+                                                type: 'linear',
+                                                display: true,
+                                                position: 'right',
+                                                title: {
+                                                    display: true,
+                                                    text: 'Workouts'
+                                                },
+                                                beginAtZero: true,
+                                                grid: {
+                                                    drawOnChartArea: false
+                                                },
+                                                min: 0,
+                                                max: 7,
+                                                ticks: {
+                                                    stepSize: 1
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            });
+                        </script>
+                        @endpush
                     @else
                         <div class="w-full flex items-center justify-center bg-gray-50 rounded-lg p-8">
                             <div class="text-center">

@@ -75,6 +75,9 @@ class DashboardController extends Controller
 
         // Get recent workouts for display
         $recentWorkouts = $completedWorkouts->take(5);
+        
+        // Prepare performance chart data
+        $performanceData = $this->preparePerformanceChartData($user->id);
 
         return view('splitify.dashboard', compact(
             'currentWeekWorkouts',
@@ -85,7 +88,8 @@ class DashboardController extends Controller
             'currentStreak',
             'streakData',
             'planCompletionPercentage',
-            'recentWorkouts'
+            'recentWorkouts',
+            'performanceData'
         ));
     }
 
@@ -222,5 +226,81 @@ class DashboardController extends Controller
 
         // Average completion percentage across all plans
         return round($totalCompletionPercentage / $activePlans->count());
+    }
+
+    /**
+     * Prepare data for the performance chart.
+     *
+     * @param int $userId
+     * @return array
+     */
+    private function preparePerformanceChartData($userId)
+    {
+        // Get the last 4 weeks of data
+        $startDate = Carbon::now()->subWeeks(4)->startOfWeek();
+        $endDate = Carbon::now()->endOfWeek();
+        
+        // Get all workout logs within date range
+        $logs = WorkoutLog::where('user_id', $userId)
+            ->where('date', '>=', $startDate)
+            ->where('date', '<=', $endDate)
+            ->where('completed', true)
+            ->with('exercises')
+            ->get();
+        
+        // Group logs by week
+        $weeklyData = [];
+        $weekLabels = [];
+        
+        // Initialize weeks (past 4 weeks)
+        for ($i = 4; $i >= 0; $i--) {
+            $weekStart = Carbon::now()->subWeeks($i)->startOfWeek()->format('Y-m-d');
+            $weekEnd = Carbon::now()->subWeeks($i)->endOfWeek()->format('Y-m-d');
+            $weekLabel = Carbon::now()->subWeeks($i)->startOfWeek()->format('M d');
+            
+            $weeklyData[$weekStart] = [
+                'volume' => 0,
+                'workouts' => 0,
+                'exercises' => 0,
+                'start_date' => $weekStart,
+                'end_date' => $weekEnd
+            ];
+            
+            $weekLabels[] = $weekLabel;
+        }
+        
+        // Process logs to calculate stats
+        foreach ($logs as $log) {
+            $weekStart = $log->date->startOfWeek()->format('Y-m-d');
+            
+            if (isset($weeklyData[$weekStart])) {
+                // Increment workout count
+                $weeklyData[$weekStart]['workouts']++;
+                
+                // Add exercises count
+                $weeklyData[$weekStart]['exercises'] += $log->exercises->count();
+                
+                // Calculate volume
+                foreach ($log->exercises as $exercise) {
+                    $volume = $exercise->pivot->sets * $exercise->pivot->reps * $exercise->pivot->weight;
+                    $weeklyData[$weekStart]['volume'] += $volume;
+                }
+            }
+        }
+        
+        // Prepare final data arrays for chart
+        $volumeData = [];
+        $workoutCountData = [];
+        
+        foreach ($weeklyData as $week) {
+            $volumeData[] = $week['volume'];
+            $workoutCountData[] = $week['workouts'];
+        }
+        
+        return [
+            'labels' => $weekLabels,
+            'volume' => $volumeData,
+            'workouts' => $workoutCountData
+        ];
     }
 }
