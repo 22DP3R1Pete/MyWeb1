@@ -34,12 +34,16 @@ class ExerciseLibraryController extends Controller
             $query->where('equipment_needed', $request->equipment);
         }
         
-        if ($request->has('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('instructions', 'like', '%' . $request->search . '%');
+        // Handle search
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('instructions', 'like', '%' . $searchTerm . '%');
+            });
         }
         
-        $exercises = $query->orderBy('name')->paginate(12);
+        $exercises = $query->orderBy('name')->paginate(12)->withQueryString();
         
         // Get unique muscle groups and equipment for filters
         $muscleGroups = Exercise::distinct()->pluck('muscle_group');

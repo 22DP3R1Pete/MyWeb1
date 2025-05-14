@@ -155,21 +155,6 @@
             margin: 1.5rem 0;
         }
         
-        .fitness-profile-section {
-            background-color: rgba(0, 178, 169, 0.05);
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            border-left: 4px solid var(--teal);
-            margin-top: 1.5rem;
-        }
-        
-        .fitness-profile-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--navy);
-            margin-bottom: 1rem;
-        }
-        
         /* Navigation bar styling */
         .navbar {
             background-color: white;
@@ -366,46 +351,6 @@
                                     @endif
                                 </div>
                             @endif
-                        </div>
-                
-                        <!-- Fitness Profile Section -->
-                        <div class="fitness-profile-section">
-                            <h4 class="fitness-profile-title">{{ __('Fitness Profile') }}</h4>
-                            
-                            <div class="form-group">
-                                <label for="height" class="form-label">{{ __('Height (cm)') }}</label>
-                                <input id="height" name="height" type="number" step="0.01" class="form-input" value="{{ old('height', $user->height) }}" />
-                                @error('height')
-                                    <p class="error-message">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="weight" class="form-label">{{ __('Weight (kg)') }}</label>
-                                <input id="weight" name="weight" type="number" step="0.01" class="form-input" value="{{ old('weight', $user->weight) }}" />
-                                @error('weight')
-                                    <p class="error-message">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="birth_year" class="form-label">{{ __('Birth Year') }}</label>
-                                <input id="birth_year" name="birth_year" type="number" min="1900" max="{{ date('Y') }}" class="form-input" value="{{ old('birth_year', $user->birth_year) }}" />
-                                @error('birth_year')
-                                    <p class="error-message">{{ $message }}</p>
-                                @enderror
-                                @if ($user->birth_year)
-                                    <p class="text-sm text-gray-600 mt-1">Age: {{ $user->age }}</p>
-                                @endif
-                            </div>
-                            
-                            <div class="form-group mb-0">
-                                <label for="fitness_goals" class="form-label">{{ __('Fitness Goals') }}</label>
-                                <textarea id="fitness_goals" name="fitness_goals" class="form-textarea">{{ old('fitness_goals', $user->fitness_goals) }}</textarea>
-                                @error('fitness_goals')
-                                    <p class="error-message">{{ $message }}</p>
-                                @enderror
-                            </div>
                         </div>
                 
                         <div class="flex items-center">

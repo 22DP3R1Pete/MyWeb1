@@ -82,7 +82,7 @@
         <form action="{{ url('/progress') }}" method="GET" class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
             <div class="flex-1">
                 <label for="timeframe" class="block text-xs font-medium text-gray-500 mb-1">{{ __('Timeframe') }}</label>
-                <select id="timeframe" name="timeframe" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50 text-sm">
+                <select id="timeframe" name="timeframe" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50 text-sm" onchange="this.form.submit()">
                     <option value="week" {{ $timeframe === 'week' ? 'selected' : '' }}>{{ __('Last Week') }}</option>
                     <option value="month" {{ $timeframe === 'month' ? 'selected' : '' }}>{{ __('Last Month') }}</option>
                     <option value="year" {{ $timeframe === 'year' ? 'selected' : '' }}>{{ __('Last Year') }}</option>
@@ -91,12 +91,30 @@
             </div>
             <div class="flex-1">
                 <label for="workout_plan" class="block text-xs font-medium text-gray-500 mb-1">{{ __('Workout Plan') }}</label>
-                <select id="workout_plan" name="workout_plan" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50 text-sm">
+                <select id="workout_plan" name="workout_plan" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50 text-sm" onchange="this.form.submit()">
                     <option value="all">{{ __('All Plans') }}</option>
                     @foreach($workoutPlans as $plan)
                         <option value="{{ $plan->id }}" {{ $planId == $plan->id ? 'selected' : '' }}>{{ $plan->title }}</option>
                     @endforeach
                 </select>
+            </div>
+            <div class="flex-1 md:flex-2">
+                <label for="search" class="block text-xs font-medium text-gray-500 mb-1">{{ __('Search') }}</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" id="search" name="search" value="{{ request('search') }}" class="block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50 text-sm" placeholder="{{ __('Search in notes...') }}">
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                        <button type="submit" class="text-splitify-teal hover:text-splitify-navy focus:outline-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="flex-none md:flex-initial md:self-end">
                 <button type="submit" class="w-full md:w-auto inline-flex items-center justify-center px-4 py-2 bg-splitify-teal border border-transparent rounded-md text-sm font-medium text-white shadow-sm hover:bg-splitify-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-splitify-teal">
@@ -104,6 +122,35 @@
                 </button>
             </div>
         </form>
+        
+        @if(request('search') || $timeframe != 'month' || $planId != 'all')
+            <div class="mt-3 flex items-center">
+                <span class="text-xs text-gray-500 mr-2">
+                    Filtered by: 
+                    @if($timeframe != 'month')
+                        {{ $timeframe == 'week' ? 'Last Week' : ($timeframe == 'year' ? 'Last Year' : 'All Time') }}
+                    @endif
+                    
+                    @if($planId != 'all')
+                        @if($timeframe != 'month') | @endif
+                        Plan: {{ $workoutPlans->firstWhere('id', $planId)->title ?? 'Unknown' }}
+                    @endif
+                    
+                    @if(request('search'))
+                        @if($timeframe != 'month' || $planId != 'all') | @endif
+                        Search: "{{ request('search') }}"
+                    @endif
+                </span>
+                <a href="{{ url('/progress') }}" class="text-xs text-splitify-teal hover:text-splitify-navy">
+                    <span class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Clear filters
+                    </span>
+                </a>
+            </div>
+        @endif
     </div>
 
     <!-- Workout Logs Table -->
@@ -248,66 +295,22 @@
                 }
                 
                 const deleteModal = modalElement.__x;
-                
-                if (deleteModal && deleteModal.$data) {
-                    // Set the logId and open the modal
-                    deleteModal.$data.logId = logId;
+                if (deleteModal) {
                     deleteModal.$data.open = true;
-                    
-                    // Also update the form action directly as a backup
-                    const form = document.getElementById('deleteForm');
-                    if (form) {
-                        form.action = '{{ url('/progress') }}/' + logId;
-                    }
+                    deleteModal.$data.logId = logId;
                 } else {
-                    // Fallback to basic confirmation if Alpine isn't initialized properly
-                    console.warn('Alpine.js modal not initialized properly, using fallback');
-                    submitDeleteForm(logId);
+                    console.error('Alpine component not found on modal element');
                 }
             } catch (error) {
-                console.error('Error handling delete confirmation:', error);
-                // Use the fallback method
-                submitDeleteForm(logId);
+                console.error('Error showing modal:', error);
             }
         }
         
-        function submitDeleteForm(logId) {
-            if (confirm("{{ __('Are you sure you want to delete this workout log?') }}")) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '{{ url('/progress') }}/' + logId;
-                
-                const csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = '{{ csrf_token() }}';
-                
-                const method = document.createElement('input');
-                method.type = 'hidden';
-                method.name = '_method';
-                method.value = 'DELETE';
-                
-                form.appendChild(csrfToken);
-                form.appendChild(method);
-                document.body.appendChild(form);
-                form.submit();
-            }
-        }
-        
-        // Add direct event listener to the delete form as a backup
-        document.addEventListener('DOMContentLoaded', function() {
-            const deleteForm = document.getElementById('deleteForm');
-            const deleteModal = document.getElementById('deleteModal');
-            
-            if (deleteForm && deleteModal && deleteModal.__x) {
-                deleteForm.addEventListener('submit', function(event) {
-                    const logId = deleteModal.__x.$data.logId;
-                    if (!deleteForm.action.includes(logId)) {
-                        event.preventDefault();
-                        deleteForm.action = '{{ url('/progress') }}/' + logId;
-                        deleteForm.submit();
-                    }
-                });
+        // Handle Enter key for search
+        document.getElementById('search').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.form.submit();
             }
         });
     </script>

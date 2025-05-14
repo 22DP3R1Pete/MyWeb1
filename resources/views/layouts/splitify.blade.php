@@ -117,9 +117,9 @@
                         
                         <a href="{{ route('profile.edit') }}" class="flex items-center py-3 px-4 rounded-lg mb-1 transition-all duration-300 ease-in-out text-gray-700 hover:bg-splitify-teal/10 {{ request()->routeIs('profile.*') ? 'bg-splitify-teal text-white' : '' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
-                            <span>{{ __('Settings') }}</span>
+                            <span>{{ __('Profile') }}</span>
                         </a>
                     </div>
                 </div>

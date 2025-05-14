@@ -23,11 +23,38 @@ class WorkoutPlanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $workoutPlans = WorkoutPlan::where('user_id', Auth::id())
-            ->latest()
-            ->paginate(10);
+        $query = WorkoutPlan::where('user_id', Auth::id());
+        
+        // Handle search
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('title', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('description', 'like', '%' . $searchTerm . '%');
+            });
+        }
+        
+        // Handle duration filter
+        if ($request->has('duration') && $request->duration != 'all') {
+            switch ($request->duration) {
+                case '1-4':
+                    $query->whereBetween('duration_weeks', [1, 4]);
+                    break;
+                case '5-8':
+                    $query->whereBetween('duration_weeks', [5, 8]);
+                    break;
+                case '9-12':
+                    $query->whereBetween('duration_weeks', [9, 12]);
+                    break;
+                case '13+':
+                    $query->where('duration_weeks', '>=', 13);
+                    break;
+            }
+        }
+        
+        $workoutPlans = $query->latest()->paginate(10)->withQueryString();
             
         return view('splitify.workout-plans.index', compact('workoutPlans'));
     }

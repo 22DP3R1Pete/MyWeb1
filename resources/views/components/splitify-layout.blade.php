@@ -163,9 +163,9 @@
                     <!-- Navigation -->
                     <div class="flex items-center">
                         <div class="hidden md:ml-6 md:flex md:items-center md:space-x-4">
-                            <a href="#" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900">{{ __('Workout Plans') }}</a>
-                            <a href="#" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900">{{ __('Exercise Library') }}</a>
-                            <a href="#" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900">{{ __('Progress') }}</a>
+                            <a href="{{ route('workout-plans.index') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 {{ request()->routeIs('workout-plans.*') ? 'text-navy-600 font-semibold' : '' }}">{{ __('Workout Plans') }}</a>
+                            <a href="{{ route('exercises.index') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 {{ request()->routeIs('exercises.*') ? 'text-navy-600 font-semibold' : '' }}">{{ __('Exercise Library') }}</a>
+                            <a href="{{ route('progress.index') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 {{ request()->routeIs('progress.*') ? 'text-navy-600 font-semibold' : '' }}">{{ __('Progress') }}</a>
                         </div>
                     </div>
                     
@@ -243,13 +243,6 @@
                             </svg>
                             <span>{{ __('Progress') }}</span>
                         </a>
-                        
-                        <a href="#" class="sidebar-link">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                            </svg>
-                            <span>{{ __('Settings') }}</span>
-                        </a>
                     </div>
                 </div>
             </aside>
@@ -299,13 +292,6 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
                                 </svg>
                                 <span>{{ __('Progress') }}</span>
-                            </a>
-                            
-                            <a href="#" class="sidebar-link">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                                </svg>
-                                <span>{{ __('Settings') }}</span>
                             </a>
                         </div>
                     </div>

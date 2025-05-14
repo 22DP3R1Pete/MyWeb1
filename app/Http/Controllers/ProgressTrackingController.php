@@ -44,10 +44,22 @@ class ProgressTrackingController extends Controller
             $query->where('workout_plan_id', $planId);
         }
         
+        // Apply search if provided
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('notes', 'like', '%' . $searchTerm . '%')
+                  ->orWhereHas('workoutPlan', function($q2) use ($searchTerm) {
+                      $q2->where('title', 'like', '%' . $searchTerm . '%');
+                  });
+            });
+        }
+        
         // Get the logs ordered by date
         $logs = $query->with('workoutPlan', 'exercises')
             ->orderBy('date', 'desc')
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
             
         // Get workout plans for the filter dropdown
         $workoutPlans = WorkoutPlan::where('user_id', Auth::id())->get();

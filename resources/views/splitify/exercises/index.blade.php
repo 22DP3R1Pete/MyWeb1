@@ -66,6 +66,35 @@
                 </div>
             </div>
         </form>
+        
+        @if(request('search') || (request('muscle_group') && request('muscle_group') != 'all') || (request('equipment') && request('equipment') != 'all'))
+            <div class="mt-3 flex items-center">
+                <span class="text-xs text-gray-500 mr-2">
+                    Filtered by: 
+                    @if(request('search'))
+                        Search "{{ request('search') }}"
+                    @endif
+                    
+                    @if(request('muscle_group') && request('muscle_group') != 'all')
+                        @if(request('search')) | @endif
+                        Muscle group: {{ ucfirst(request('muscle_group')) }}
+                    @endif
+                    
+                    @if(request('equipment') && request('equipment') != 'all')
+                        @if(request('search') || (request('muscle_group') && request('muscle_group') != 'all')) | @endif
+                        Equipment: {{ ucfirst(request('equipment')) }}
+                    @endif
+                </span>
+                <a href="{{ route('exercises.index') }}" class="text-xs text-splitify-teal hover:text-splitify-navy">
+                    <span class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Clear filters
+                    </span>
+                </a>
+            </div>
+        @endif
     </div>
 
     <!-- Exercises Grid -->
@@ -182,6 +211,14 @@
                 open: false,
                 exerciseId: null
             });
+        });
+        
+        // Handle Enter key for search
+        document.getElementById('search').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.form.submit();
+            }
         });
     </script>
 </x-splitify-layout> 

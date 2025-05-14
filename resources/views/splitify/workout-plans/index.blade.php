@@ -30,29 +30,60 @@
 
     <!-- Filter & Search -->
     <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-        <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
-            <div class="flex-1">
-                <label for="duration" class="block text-xs font-medium text-gray-500 mb-1">{{ __('Duration') }}</label>
-                <select id="duration" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50 text-sm">
-                    <option value="all">{{ __('All Durations') }}</option>
-                    <option value="1-4">{{ __('1-4 weeks') }}</option>
-                    <option value="5-8">{{ __('5-8 weeks') }}</option>
-                    <option value="9-12">{{ __('9-12 weeks') }}</option>
-                    <option value="13+">{{ __('13+ weeks') }}</option>
-                </select>
-            </div>
-            <div class="flex-1 md:flex-2">
-                <label for="search" class="block text-xs font-medium text-gray-500 mb-1">{{ __('Search') }}</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+        <form action="{{ route('workout-plans.index') }}" method="GET">
+            <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
+                <div class="flex-1">
+                    <label for="duration" class="block text-xs font-medium text-gray-500 mb-1">{{ __('Duration') }}</label>
+                    <select id="duration" name="duration" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50 text-sm" onchange="this.form.submit()">
+                        <option value="all" {{ request('duration') == 'all' || !request('duration') ? 'selected' : '' }}>{{ __('All Durations') }}</option>
+                        <option value="1-4" {{ request('duration') == '1-4' ? 'selected' : '' }}>{{ __('1-4 weeks') }}</option>
+                        <option value="5-8" {{ request('duration') == '5-8' ? 'selected' : '' }}>{{ __('5-8 weeks') }}</option>
+                        <option value="9-12" {{ request('duration') == '9-12' ? 'selected' : '' }}>{{ __('9-12 weeks') }}</option>
+                        <option value="13+" {{ request('duration') == '13+' ? 'selected' : '' }}>{{ __('13+ weeks') }}</option>
+                    </select>
+                </div>
+                <div class="flex-1 md:flex-2">
+                    <label for="search" class="block text-xs font-medium text-gray-500 mb-1">{{ __('Search') }}</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <input type="text" id="search" name="search" value="{{ request('search') }}" class="block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50 text-sm" placeholder="{{ __('Search plans...') }}">
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <button type="submit" class="text-splitify-teal hover:text-splitify-navy focus:outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                    <input type="text" id="search" class="block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:border-splitify-teal focus:ring focus:ring-splitify-teal focus:ring-opacity-50 text-sm" placeholder="{{ __('Search plans...') }}">
                 </div>
             </div>
-        </div>
+            
+            @if(request('search') || (request('duration') && request('duration') != 'all'))
+                <div class="mt-3 flex items-center">
+                    <span class="text-xs text-gray-500 mr-2">
+                        @if(request('search') && (request('duration') && request('duration') != 'all'))
+                            Filtered by "{{ request('search') }}" and {{ request('duration') }} weeks
+                        @elseif(request('search'))
+                            Searched for "{{ request('search') }}"
+                        @elseif(request('duration') && request('duration') != 'all')
+                            Filtered by {{ request('duration') }} weeks
+                        @endif
+                    </span>
+                    <a href="{{ route('workout-plans.index') }}" class="text-xs text-splitify-teal hover:text-splitify-navy">
+                        <span class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Clear filters
+                        </span>
+                    </a>
+                </div>
+            @endif
+        </form>
     </div>
 
     <!-- Workout Plans Grid -->
@@ -148,5 +179,13 @@
                 detail: { planId: planId }
             }));
         }
+
+        // Handle Enter key for search
+        document.getElementById('search').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.form.submit();
+            }
+        });
     </script>
 </x-splitify-layout> 
