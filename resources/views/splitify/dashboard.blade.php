@@ -7,6 +7,9 @@
                 <p class="text-gray-600">Welcome back, {{ Auth::user()->name }}! Here's your workout summary.</p>
             </div>
             <div class="mt-4 md:mt-0 flex space-x-3">
+                @if (Auth::check() && Auth::user()->admin == 1)
+                    <a href="{{ route('admin.dashboard') }}" class="splitify-btn splitify-btn-secondary">Admin Panel</a>
+                @endif
                 <a href="{{ route('workout-plans.create') }}" class="splitify-btn splitify-btn-primary">Create New Workout</a>
             </div>
         </div>
