@@ -15,6 +15,12 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    
+                    @if (Auth::check() && Auth::user()->admin == 1)
+                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                            {{ __('Admin Panel') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -37,6 +43,12 @@
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
+
+                        @if (Auth::check() && Auth::user()->admin == 1)
+                            <x-dropdown-link :href="route('admin.dashboard')">
+                                {{ __('Admin Panel') }}
+                            </x-dropdown-link>
+                        @endif
 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
@@ -70,6 +82,12 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            
+            @if (Auth::check() && Auth::user()->admin == 1)
+                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                    {{ __('Admin Panel') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

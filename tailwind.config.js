@@ -26,6 +26,7 @@ export default {
                 },
                 'splitify-teal': '#4EB8B9',
                 'splitify-navy': '#18414E',
+                'splitify-navy-light': '#255A6C',
                 'splitify-light-teal': '#E6F3F3',
                 'splitify-gray': '#F8FAFB',
                 'splitify-dark-gray': '#4A5568',
