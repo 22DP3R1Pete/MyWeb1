@@ -11,24 +11,26 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('exercises', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->nullable()->constrained('users');
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->string('muscle_group');
-            $table->string('equipment_needed')->nullable();
-            $table->string('difficulty_level');
-            $table->string('video_url')->nullable();
-            $table->string('image_url')->nullable();
-            $table->text('instructions')->nullable();
-            $table->boolean('is_custom')->default(false);
-            $table->timestamps();
-            $table->softDeletes();
-            
-            $table->index('muscle_group');
-            $table->index('user_id');
-        });
+        if (!Schema::hasTable('exercises')) {
+            Schema::create('exercises', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->nullable()->constrained('users');
+                $table->string('name');
+                $table->text('description')->nullable();
+                $table->string('muscle_group');
+                $table->string('equipment_needed')->nullable();
+                $table->string('difficulty_level');
+                $table->string('video_url')->nullable();
+                $table->string('image_url')->nullable();
+                $table->text('instructions')->nullable();
+                $table->boolean('is_custom')->default(false);
+                $table->timestamps();
+                $table->softDeletes();
+                
+                $table->index('muscle_group');
+                $table->index('user_id');
+            });
+        }
     }
 
     /**

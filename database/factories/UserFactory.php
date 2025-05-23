@@ -29,18 +29,6 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'height' => fake()->randomFloat(2, 150, 210), // Height in cm
-            'weight' => fake()->randomFloat(2, 50, 120), // Weight in kg
-            'birth_year' => fake()->numberBetween(1960, 2005), // Birth year (18-63 years old)
-            'fitness_goals' => fake()->randomElement([
-                'Weight loss',
-                'Muscle gain',
-                'Strength building',
-                'Endurance improvement',
-                'General fitness',
-                'Flexibility',
-                null
-            ]),
             'admin' => false,
         ];
     }

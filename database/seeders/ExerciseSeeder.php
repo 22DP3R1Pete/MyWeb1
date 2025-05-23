@@ -16,6 +16,7 @@ class ExerciseSeeder extends Seeder
         // Chest exercises
         Exercise::create([
             'name' => 'Bench Press',
+            'description' => 'A compound exercise that primarily targets the chest muscles',
             'muscle_group' => 'Chest',
             'equipment_needed' => 'Barbell',
             'difficulty_level' => 'Intermediate',
@@ -29,6 +30,7 @@ class ExerciseSeeder extends Seeder
 
         Exercise::create([
             'name' => 'Incline Dumbbell Press',
+            'description' => 'An exercise that targets the upper chest muscles',
             'muscle_group' => 'Chest',
             'equipment_needed' => 'Dumbbells',
             'difficulty_level' => 'Intermediate',
@@ -42,6 +44,7 @@ class ExerciseSeeder extends Seeder
 
         Exercise::create([
             'name' => 'Push-ups',
+            'description' => 'A bodyweight exercise that targets the chest, shoulders, and triceps',
             'muscle_group' => 'Chest',
             'equipment_needed' => 'Bodyweight',
             'difficulty_level' => 'Beginner',

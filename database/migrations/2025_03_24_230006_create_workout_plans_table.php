@@ -18,7 +18,6 @@ return new class extends Migration
                 $table->foreignId('user_id')->constrained('users');
                 $table->string('title');
                 $table->text('description')->nullable();
-                $table->string('difficulty_level');
                 $table->integer('duration_weeks');
                 $table->integer('sessions_per_week');
                 $table->json('goals')->nullable();
@@ -29,7 +28,6 @@ return new class extends Migration
                 $table->softDeletes();
                 
                 $table->index(['user_id', 'is_public']);
-                $table->index('difficulty_level');
             });
         }
     }

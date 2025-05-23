@@ -21,11 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'height',
-        'weight',
-        'fitness_goals',
         'admin',
-        'birth_year',
     ];
 
     /**
@@ -48,10 +44,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'height' => 'decimal:2',
-            'weight' => 'decimal:2',
             'admin' => 'boolean',
-            'birth_year' => 'integer',
         ];
     }
 
